@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedidos - El Palacio del Sándwich</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    /* HEADER */
+    .pedidos-header {
+      background: #d62828;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      color: #fff;
+    }
+
+    .pedidos-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pedidos-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(0,0,0,.4);
+    }
+
+    .pedidos-title-main {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .pedidos-title-sub {
+      font-size: 12px;
+      opacity: .85;
+    }
+
+    .btn-logout {
+      background: #fff;
+      color: #d62828;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      margin-left: 10px;
+    }
+
+    /* CONTENEDOR */
+    .container {
+      margin: 35px auto;
+      max-width: 1200px;
+      background: #fff;
+      padding: 18px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.12);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    table thead {
+      background: #d62828;
+      color: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .tipo-badge {
+      padding: 3px 8px;
+      font-size: 12px;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .tipo-local { background: #2e7d32; }
+    .tipo-delivery { background: #1565c0; }
+
+    .nuevo-pedido {
+      background: #fff5b8 !important;
+      animation: flash 1s ease-in-out 3;
+    }
+
+    @keyframes flash {
+      0% { background: #fff5b8; }
+      50% { background: #ffe07e; }
+      100% { background: #fff5b8; }
+    }
+
+    /* MODAL */
+    #modalPedido {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: rgba(0,0,0,.55);
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+    }
+
+    #modalPedido .contenido {
+      width: 95%;
+      max-width: 500px;
+      background: #fff;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 18px rgba(0,0,0,.25);
+    }
+
+    .btn-cerrar {
+      background: #d62828;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* VISTA CLIENTE */
+    #cliente-gracias {
+      display: none;
+      max-width: 520px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.25);
+    }
+	.btn-listo {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-listo:hover {
+  background: #1b5e20;
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- ADMIN HEADER -->
+  <header class="pedidos-header" id="admin-header">
+    <div class="pedidos-header-left">
+      <img src="logo_palacio.jpg" class="pedidos-logo">
+      <div>
+        <div class="pedidos-title-main">Pedidos</div>
+        <div class="pedidos-title-sub">Panel en tiempo real</div>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver</button>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- CLIENTE - GRACIAS -->
+  <section id="cliente-gracias"></section>
+
+  <!-- ADMIN - TABLA -->
+  <main class="container" id="admin-pedidos">
+    <h2>Listado de Pedidos</h2>
+
+    <table id="tablaPedidos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Tipo</th>
+          <th>Total</th>
+          <th>Pago</th>
+          <th>Estado</th>
+          <th>Hora</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <!-- MODAL -->
+  <div id="modalPedido">
+    <div class="contenido">
+      <h3>Detalle del Pedido</h3>
+      <div id="detallePedido"></div>
+      <button class="btn-cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="pedidos.js"></script>
+</body>
+</html>

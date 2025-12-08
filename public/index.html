@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="home.css" />
+</head>
+
+<body class="home-body">
+
+  <!-- ========================================= -->
+  <!-- NAVBAR -->
+  <!-- ========================================= -->
+  <header class="navbar">
+    <div class="nav-left">
+      <img src="logo_palacio.jpg" class="nav-logo" alt="Logo" />
+      <span class="nav-title">El Palacio del Sándwich</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="https://www.facebook.com/profile.php?id=100063728041832"
+         target="_blank" class="nav-icon">📘</a>
+
+      <a href="https://www.instagram.com/elpalaciodelsandwich/"
+         target="_blank" class="nav-icon">📸</a>
+
+      <button class="btn-menu" onclick="openMenu()">☰</button>
+    </div>
+  </header>
+
+  <!-- ========================================= -->
+  <!-- MENÚ LATERAL -->
+  <!-- ========================================= -->
+  <aside id="sideMenu" class="side-menu">
+    <button class="close-menu" onclick="closeMenu()">✖</button>
+
+    <a href="#hero" onclick="closeMenu()">Inicio</a>
+    <a href="#promos" onclick="closeMenu()">Promociones</a>
+    <a href="#redes-mapa" onclick="closeMenu()">Ubicación</a>
+    <a href="#reservasBox" onclick="closeMenu()">Reservas</a>
+
+    <button class="pedido-btn" onclick="closeMenu(); abrirPopupCategorias()">
+      🥪 Ver menú
+    </button>
+  </aside>
+
+  <!-- ========================================= -->
+  <!-- MAIN -->
+  <!-- ========================================= -->
+  <main class="home-main">
+
+    <!-- HERO -->
+    <section id="hero" class="hero-banner">
+      <img src="logo_palacio4.png" class="hero-logo-centered" alt="Logo centro" />
+
+      <div class="hero-text">
+        <h1>El Palacio del Sándwich</h1>
+        <p>Sándwiches de miga, pizzas, masa madre y mucho más.</p>
+      </div>
+
+      <div class="hero-buttons">
+        <button class="hero-btn hero-btn-amarillo" onclick="pedirRetirar()">🍽 Retirar</button>
+        <button class="hero-btn hero-btn-rojo" onclick="irDelivery()">🛵 Delivery</button>
+        <button class="hero-btn hero-btn-reserva" onclick="irReservas()">📅 Reserva</button>
+      </div>
+
+      <div id="hero-dots" class="hero-dots"></div>
+    </section>
+
+    <!-- GRID PRINCIPAL -->
+    <section class="home-grid">
+
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="home-left">
+
+        <!-- PROMOS -->
+        <section id="promos" class="home-box promos-section">
+          <h2 class="titulo-seccion">Promociones</h2>
+          <div id="promo-lista" class="promo-carousel">
+            <!-- Se carga dinámicamente -->
+          </div>
+        </section>
+
+        <!-- REDES / OPINIONES / MAPA -->
+        <section id="redes-mapa" class="home-box redes-mapa-section">
+
+          <h2 class="titulo-seccion">Redes y contacto</h2>
+
+<section id="redes-mapa" class="home-box redes-mapa-section">
+
+  <h2 class="titulo-seccion">Redes y contacto</h2>
+
+<div class="social-buttons">
+  <a href="https://www.facebook.com/profile.php?id=100063728041832" 
+     target="_blank" class="social-btn">
+    <img src="img/btn_facebook.png" alt="Facebook">
+  </a>
+
+  <a href="https://www.instagram.com/elpalaciodelsandwich/" 
+     target="_blank" class="social-btn">
+    <img src="img/btn_instagram.png" alt="Instagram">
+  </a>
+</div>
+
+</section>
+
+
+          <div class="google-box">
+            <h3>⭐ Opiniones de Google</h3>
+            <p class="google-rating">4.8 ★★★★★</p>
+            <p class="google-review">"Excelente atención y los mejores sandwiches."</p>
+            <p class="google-user">— Cliente Google</p>
+            <a class="google-btn"
+               target="_blank"
+               href="https://www.google.com/search?q=el+palacio+del+sándwich+santa+rosa+la+pampa">
+               Ver más
+            </a>
+          </div>
+
+          <h2 class="titulo-seccion" style="margin-top:20px;">¿Dónde estamos?</h2>
+          <p class="widget-direccion">T. Edison 1412 – Santa Rosa (La Pampa)</p>
+
+          <iframe
+            class="mini-mapa"
+            loading="lazy"
+            src="https://www.google.com/maps?q=T.+Edison+1412,+Santa+Rosa,+La+Pampa&output=embed">
+          </iframe>
+
+        </section>
+
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <aside class="home-right">
+
+        <!-- CARRUSEL DEL LOCAL -->
+        <section class="home-box carrusel-box">
+          <div class="carrusel-derecha">
+            <img src="dentrodellocal.jpg" class="foto-carrusel active" alt="Interior local">
+            <img src="publilocalgente.jpg" class="foto-carrusel" alt="Clientes disfrutando">
+          </div>
+        </section>
+
+        <!-- HORARIOS + CONTACTO -->
+        <section class="home-box ubicacion-box">
+
+          <div class="widget-box">
+
+            <div class="horario-box">
+              <strong>Horarios:</strong><br>
+              Lunes a Sábado: 10–13 / 20–22:30<br>
+              Domingo: 20–22:30
+            </div>
+
+            <div class="abierto-cerrado" id="estadoLocal">Abierto hoy</div>
+
+            <p class="widget-direccion">T. Edison 1412 – Santa Rosa</p>
+
+            <div class="widget-botones">
+              <a href="https://wa.me/5492954321305" target="_blank" class="btn-whatsapp-img">
+                <img src="botonwhatsapp1.png" alt="WhatsApp">
+              </a>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- RESERVAS -->
+        <section id="reservasBox" class="home-box reservas-box">
+          <h2>Reservas</h2>
+          <p>Encargá bandejas con anticipación.</p>
+          <button class="btn-primary" onclick="irReservas()">📅 Reservar</button>
+        </section>
+
+      </aside>
+
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="home-footer">
+    © <span id="anio"></span> El Palacio del Sándwich
+  </footer>
+
+  <!-- ========================================= -->
+  <!-- POPUP CATEGORÍAS -->
+  <!-- ========================================= -->
+  <div id="popupCategorias" class="popup-overlay">
+    <div class="popup-box">
+      <div class="popup-header">
+        <h2>Elegí una categoría</h2>
+        <button class="popup-close" onclick="cerrarPopupCategorias()">✖</button>
+      </div>
+
+      <div id="popupCategoriasLista"></div>
+
+      <div class="popup-footer">
+        <button class="btn-ver-carrito" onclick="abrirPopupCarrito()">Ir al carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- POPUP PRODUCTOS -->
+  <!-- ========================================= -->
+  <div id="popupProductos" class="popup-overlay">
+    <div class="popup-box">
+      <div class="popup-header">
+        <button class="popup-back" onclick="volverACategorias()">←</button>
+        <h2 id="popupProductosTitulo">Productos</h2>
+        <button class="popup-close" onclick="cerrarPopupProductos()">✖</button>
+      </div>
+
+      <div id="popupProductosLista"></div>
+
+      <div class="popup-footer">
+        <button class="btn-ver-carrito" onclick="abrirPopupCarrito()">Ir al carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- POPUP CARRITO LATERAL -->
+  <!-- ========================================= -->
+  <div id="popupCarrito" class="popup-carrito">
+    <div class="popupCarrito-header">
+      <h3>Tu pedido</h3>
+      <button class="btn-cerrar-carrito" onclick="cerrarPopupCarrito()">✖</button>
+    </div>
+    <div id="popupCarritoItems" class="popupCarrito-body"></div>
+    <div class="popupCarrito-footer">
+      <div class="total-linea">
+        Total: $<span id="popupCarritoTotal">0</span>
+      </div>
+      <button class="btn-confirmar" onclick="finalizarPedidoDesdeCarrito()">Finalizar pedido</button>
+      <button class="btn-secondary" onclick="cerrarPopupCarrito(); abrirPopupCategorias();">
+        Seguir agregando
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- POPUP RETIRO – HERMOSO DISEÑO -->
+  <!-- ========================================= -->
+  <div id="popupRetiro" class="popup-overlay">
+    <div class="popup-box retiro-box">
+
+      <div class="popup-header">
+        <button class="popup-back" onclick="cerrarPopupRetiro()">✖</button>
+        <h2 class="retiro-titulo">Retiro en el local</h2>
+      </div>
+
+      <p class="retiro-sub">Completá tus datos para preparar tu pedido</p>
+
+      <label class="retiro-label">Tu nombre</label>
+      <input type="text" id="retiroNombre" class="retiro-input" placeholder="Ej: Juan Pérez">
+
+      <label class="retiro-label">Teléfono</label>
+      <input type="tel" id="retiroTelefono" class="retiro-input" placeholder="Ej: 1123456789">
+
+      <label class="retiro-label">Hora estimada de retiro</label>
+      <input type="time" id="retiroHora" class="retiro-input">
+
+      <button class="btn-confirmar-retiro" onclick="confirmarRetiro()">
+        Confirmar pedido
+      </button>
+
+      <button class="btn-cancelar-retiro" onclick="cerrarPopupRetiro()">
+        Cancelar
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- POPUP RESERVA EVENTOS -->
+  <!-- ========================================= -->
+  <div id="popupReserva" class="popup-overlay">
+    <div class="popup-box reserva-box">
+
+      <div class="popup-header">
+        <button class="popup-back" onclick="cerrarPopupReserva()">✖</button>
+        <h2 class="reserva-titulo">Reserva para eventos</h2>
+      </div>
+
+      <p class="reserva-sub">Completá tus datos y elegí los productos que necesitás para ese día.</p>
+
+      <form id="reservaForm" onsubmit="event.preventDefault(); confirmarReservaPublica();">
+
+        <div class="reserva-form-grid">
+          <!-- Columna DATOS -->
+          <div class="reserva-col">
+            <label class="reserva-label">Nombre</label>
+            <input type="text" id="resNombre" class="reserva-input" required>
+
+            <label class="reserva-label">Apellido</label>
+            <input type="text" id="resApellido" class="reserva-input" required>
+
+            <label class="reserva-label">Teléfono</label>
+            <input type="tel" id="resTelefono" class="reserva-input" placeholder="Ej: 2954123456" required>
+
+            <label class="reserva-label">Código postal</label>
+            <input type="text" id="resCP" class="reserva-input" placeholder="Ej: 6300" required>
+
+            <label class="reserva-label">Provincia</label>
+            <input type="text" id="resProvincia" class="reserva-input" placeholder="Se completa automáticamente" readonly>
+
+            <label class="reserva-label">Domicilio</label>
+            <input type="text" id="resDomicilio" class="reserva-input" placeholder="Calle y número" required>
+
+            <label class="reserva-label">Ciudad</label>
+            <input type="text" id="resCiudad" class="reserva-input" required>
+
+            <label class="reserva-label">Fecha de la reserva</label>
+            <input type="date" id="resFecha" class="reserva-input" required>
+
+            <label class="reserva-label">Hora aproximada</label>
+            <input type="time" id="resHora" class="reserva-input" required>
+
+            <label class="reserva-label">Tipo de evento</label>
+            <input type="text" id="resTipoEvento" class="reserva-input" placeholder="Cumpleaños, reunión, catering, etc.">
+          </div>
+
+          <!-- Columna PRODUCTOS -->
+          <div class="reserva-col reserva-col-productos">
+            <label class="reserva-label">Categoría de productos</label>
+            <select id="reservaCategoriaSelect" class="reserva-input"></select>
+
+            <div id="reservaProductosList" class="reserva-productos-list">
+              <!-- Se llenan por JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="reserva-resumen-box">
+          <h3>Productos seleccionados</h3>
+          <div id="reservaResumen">
+            <p>Seleccioná una categoría y agregá cantidades para ver el resumen acá.</p>
+          </div>
+        </div>
+
+        <p id="reservaMsg" class="mensaje" style="display:none;"></p>
+
+        <div class="reserva-actions">
+          <button type="submit" class="btn-confirmar-retiro">
+            Confirmar reserva
+          </button>
+          <button type="button" class="btn-cancelar-retiro" onclick="cerrarPopupReserva()">
+            Volver
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="home.js"></script>
+
+</body>
+</html>

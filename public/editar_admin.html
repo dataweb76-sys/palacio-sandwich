@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Gestión de Administradores - El Palacio del Sándwich</title>
+<link rel="stylesheet" href="styles.css" />
+
+<style>
+  body {
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+    margin: 0;
+  }
+
+  header {
+    background: #d62828;
+    color: white;
+    padding: 15px 25px;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header button {
+    background: #000;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .container {
+    max-width: 900px;
+    background: white;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    margin-top: 10px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background: #efefef;
+    font-weight: bold;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .btn-danger {
+    background: #d62828;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+  }
+
+  .btn-ok {
+    background: #2b9348;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+  }
+
+  form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  input, select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  #msg {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  .ok { color: #2b9348; }
+  .error { color: #d62828; }
+</style>
+</head>
+
+<body>
+
+<header>
+  Gestión de Administradores
+  <div>
+    <button onclick="goBack()">Volver</button>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <h2>Crear nuevo administrador</h2>
+
+  <form id="form-crear">
+    <input id="new-user" placeholder="Usuario" required />
+    <input id="new-pass" placeholder="Contraseña" type="password" required />
+    <select id="new-role">
+      <option value="admin">Admin</option>
+    </select>
+    <button class="btn-ok" type="submit">Crear</button>
+  </form>
+
+  <p id="msg"></p>
+
+  <h2>Lista de administradores</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-admins"></tbody>
+  </table>
+
+</div>
+
+<script>
+// =========================
+// VALIDAR TOKEN
+// =========================
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "/login.html";
+
+const AUTH = { "Authorization": "Bearer " + token };
+
+function goBack() { window.location.href = "dashboard.html"; }
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+// =========================
+// PROTEGER PANEL SOLO PARA SUPERADMIN
+// =========================
+async function validarRol() {
+  // No tenés endpoint de "yo", así que extraemos el role del token decodificado
+  const payload = JSON.parse(atob(token.split(".")[1]));
+
+  if (!payload.role || payload.role !== "superadmin") {
+    alert("Acceso denegado. Este panel es solo para SUPERADMIN.");
+    window.location.href = "dashboard.html";
+  }
+}
+
+// =========================
+// CARGAR LISTA DE ADMINS
+// =========================
+async function cargarAdmins() {
+  const res = await fetch("/admins", { headers: AUTH });
+
+  if (res.status === 403) {
+    alert("No tienes permiso para ver esta sección.");
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  const admins = await res.json();
+  const tbody = document.getElementById("tabla-admins");
+  tbody.innerHTML = admins.map(a => `
+    <tr>
+      <td>${a.id}</td>
+      <td>${a.user}</td>
+      <td>${a.role}</td>
+      <td>
+        ${a.role === "superadmin" ? "-" : `
+        <button class="btn-danger" onclick="borrarAdmin(${a.id})">Eliminar</button>
+        `}
+      </td>
+    </tr>
+  `).join("");
+}
+
+// =========================
+// CREAR ADMIN
+// =========================
+document.getElementById("form-crear").onsubmit = async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
+
+  const user = document.getElementById("new-user").value.trim();
+  const pass = document.getElementById("new-pass").value.trim();
+  const role = "admin"; // el superadmin NO puede crear superadmins
+
+  const res = await fetch("/admins", {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      ...AUTH 
+    },
+    body: JSON.stringify({ user, pass, role })
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    msg.textContent = data.error;
+    msg.className = "error";
+  } else {
+    msg.textContent = "Administrador creado correctamente";
+    msg.className = "ok";
+    document.getElementById("form-crear").reset();
+    cargarAdmins();
+  }
+};
+
+// =========================
+// ELIMINAR ADMIN
+// =========================
+async function borrarAdmin(id) {
+  if (!confirm("¿Eliminar administrador?")) return;
+
+  await fetch("/admins/" + id, {
+    method: "DELETE",
+    headers: AUTH
+  });
+
+  cargarAdmins();
+}
+
+// =========================
+// INIT
+// =========================
+validarRol();
+cargarAdmins();
+
+</script>
+
+</body>
+</html>
+

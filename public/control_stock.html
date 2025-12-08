@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Stock - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+      background-color: #f4f5f7;
+      color: #222;
+    }
+
+    .topbar {
+      background-color: #d62828;
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h1 {
+      font-size: 20px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .topbar button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      cursor: pointer;
+      background: #000;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .page {
+      padding: 24px 32px 32px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .page-subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-label {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .card-value {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .card-extra {
+      font-size: 12px;
+      margin-top: 4px;
+      color: #999;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .filter-group label {
+      color: #555;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+    }
+
+    .filter-group input[type="search"] {
+      min-width: 220px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      background: #e0e1e5;
+      color: #222;
+    }
+
+    .btn-primary {
+      background: #2b9348;
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #ccc;
+    }
+
+    .table-wrapper {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: #fafafa;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      font-weight: 600;
+      color: #555;
+    }
+
+    tr:hover td {
+      background: #f9fafb;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .chip-ok {
+      background: #e9f7ef;
+      color: #1a7f37;
+    }
+
+    .chip-low {
+      background: #fff4e5;
+      color: #b85c00;
+    }
+
+    .chip-out {
+      background: #fde7ea;
+      color: #b00020;
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .product-cell img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #eee;
+    }
+
+    .product-name {
+      font-weight: 500;
+    }
+
+    .product-meta {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .table-footer {
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #777;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-footer button {
+      font-size: 12px;
+    }
+
+    #toast-container {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1000;
+    }
+
+    .toast {
+      min-width: 260px;
+      max-width: 340px;
+      background: #1f2933;
+      color: #f9fafb;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .toast-warning {
+      border-left: 4px solid #facc15;
+    }
+
+    .toast-danger {
+      border-left: 4px solid #f97373;
+    }
+
+    @media (max-width: 1024px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .page {
+        padding: 16px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filters {
+        width: 100%;
+      }
+
+      .filter-group input[type="search"] {
+        width: 100%;
+      }
+
+      .actions {
+        justify-content: flex-end;
+      }
+
+      table {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra superior -->
+  <header class="topbar">
+    <h1>Control de Stock - El Palacio del Sándwich</h1>
+    <div class="topbar-actions">
+      <button onclick="goBack()">Volver al Panel</button>
+      <button onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <h2 class="page-title">Control de Stock</h2>
+    <p class="page-subtitle">
+      Monitorea tus productos, detecta stock bajo en tiempo real y exporta tu inventario.
+    </p>
+
+    <!-- Dashboard -->
+    <section class="cards-grid">
+      <article class="card">
+        <div class="card-label">Total de productos</div>
+        <div class="card-value" id="card-total">–</div>
+        <div class="card-extra">Registrados en el sistema</div>
+      </article>
+
+      <article class="card">
+        <div class="card-label">Stock bajo</div>
+        <div class="card-value" id="card-low">–</div>
+        <div class="card-extra">Por debajo del mínimo</div>
+      </article>
+
+      <article class="card">
+        <div class="card-label">Sin stock</div>
+        <div class="card-value" id="card-out">–</div>
+        <div class="card-extra">Agotados actualmente</div>
+      </article>
+
+      <article class="card">
+        <div class="card-label">Categoría más frecuente</div>
+        <div class="card-value" id="card-top-category">–</div>
+        <div class="card-extra">Según productos cargados</div>
+      </article>
+    </section>
+
+    <!-- Filtros y acciones -->
+    <section class="toolbar">
+      <div class="filters">
+        <div class="filter-group">
+          <label for="search">Buscar:</label>
+          <input
+            type="search"
+            id="search"
+            placeholder="Nombre, categoría, código..."
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-category">Categoría:</label>
+          <select id="filter-category">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-status">Estado:</label>
+          <select id="filter-status">
+            <option value="">Todos</option>
+            <option value="ok">Con stock</option>
+            <option value="low">Stock bajo</option>
+            <option value="out">Sin stock</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="sort-by">Ordenar por:</label>
+          <select id="sort-by">
+            <option value="name-asc">Nombre A-Z</option>
+            <option value="name-desc">Nombre Z-A</option>
+            <option value="stock-asc">Stock ↑</option>
+            <option value="stock-desc">Stock ↓</option>
+            <option value="category">Categoría</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-outline" id="btn-refresh">Actualizar</button>
+        <button class="btn" id="btn-auto-refresh">Auto (1 min)</button>
+        <button class="btn btn-primary" id="btn-export">
+          Exportar a Excel (CSV)
+        </button>
+      </div>
+    </section>
+
+    <!-- Tabla -->
+    <section class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th class="text-right">Stock actual</th>
+            <th class="text-right">Stock mínimo</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Última venta</th>
+          </tr>
+        </thead>
+        <tbody id="stock-tbody"></tbody>
+      </table>
+      <div class="table-footer">
+        <span id="table-summary">Mostrando 0 productos</span>
+        <div>
+          <button class="btn btn-outline" id="btn-prev-page">&lt;</button>
+          <span id="pagination-info">Página 1</span>
+          <button class="btn btn-outline" id="btn-next-page">&gt;</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Contenedor de notificaciones -->
+  <div id="toast-container"></div>
+
+  <script>
+    // ========================
+    // VALIDAR LOGIN
+    // ========================
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    // ========================
+    // CONFIG
+    // ========================
+
+    // Usamos la MISMA API que productos.html
+    const API_STOCK_URL = "/products";
+
+    let stockData = [];
+    let filteredData = [];
+    const PAGE_SIZE = 20;
+    let currentPage = 1;
+    let autoRefresh = false;
+    let autoRefreshInterval = null;
+
+    // ========================
+    // UTILIDADES
+    // ========================
+    function formatNumber(n) {
+      if (n === null || n === undefined || isNaN(n)) return "-";
+      return new Intl.NumberFormat("es-AR").format(n);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "–";
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return "–";
+      return d.toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+      });
+    }
+
+    function getStatus(product) {
+      const stock = Number(product.stock || 0);
+      // en tu back se llama stock_alert (productos.js)
+      const min = Number(product.min_stock || product.stock_alert || 0);
+
+      if (stock <= 0) return "out";
+      if (min && stock <= min) return "low";
+      return "ok";
+    }
+
+    function createToast({ title, message, type = "warning", timeout = 5000 }) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className =
+        "toast " + (type === "danger" ? "toast-danger" : "toast-warning");
+      toast.innerHTML = `
+        <div class="toast-title">${title}</div>
+        <div>${message}</div>
+      `;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add("show"));
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 250);
+      }, timeout);
+    }
+
+    // ========================
+    // CARGA DATOS
+    // ========================
+    async function loadStock() {
+      try {
+        const res = await fetch(API_STOCK_URL);
+        if (!res.ok) throw new Error("Error HTTP " + res.status);
+        const data = await res.json();
+        stockData = Array.isArray(data) ? data : [];
+        applyFiltersAndRender();
+        showLowStockToasts();
+      } catch (err) {
+        console.error(err);
+        createToast({
+          title: "Error al obtener stock",
+          message: "No se pudo conectar con el servidor.",
+          type: "danger",
+        });
+      }
+    }
+
+    // ========================
+    // FILTROS / ORDEN
+    // ========================
+    function applyFiltersAndRender() {
+      const search = document
+        .getElementById("search")
+        .value.toLowerCase()
+        .trim();
+      const cat = document.getElementById("filter-category").value;
+      const statusFilter = document.getElementById("filter-status").value;
+      const sortBy = document.getElementById("sort-by").value;
+
+      filteredData = stockData.filter((p) => {
+        const name = (p.name || "").toLowerCase();
+        const category = (p.category || "").toLowerCase();
+        const code = (p.code || p.codigo || "").toLowerCase();
+
+        if (search) {
+          const match =
+            name.includes(search) ||
+            category.includes(search) ||
+            code.includes(search);
+          if (!match) return false;
+        }
+
+        if (cat && category !== cat.toLowerCase()) return false;
+
+        if (statusFilter) {
+          const st = getStatus(p);
+          if (st !== statusFilter) return false;
+        }
+
+        return true;
+      });
+
+      filteredData.sort((a, b) => {
+        const nameA = (a.name || "").toLowerCase();
+        const nameB = (b.name || "").toLowerCase();
+        const catA = (a.category || "").toLowerCase();
+        const catB = (b.category || "").toLowerCase();
+        const stockA = Number(a.stock || 0);
+        const stockB = Number(b.stock || 0);
+
+        switch (sortBy) {
+          case "name-asc":
+            return nameA.localeCompare(nameB);
+          case "name-desc":
+            return nameB.localeCompare(nameA);
+          case "stock-asc":
+            return stockA - stockB;
+          case "stock-desc":
+            return stockB - stockA;
+          case "category":
+            return catA.localeCompare(catB) || nameA.localeCompare(nameB);
+          default:
+            return 0;
+        }
+      });
+
+      const maxPage = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+      if (currentPage > maxPage) currentPage = maxPage;
+
+      renderTable();
+      updateDashboardCards();
+      fillCategoryFilter();
+    }
+
+    function fillCategoryFilter() {
+      const select = document.getElementById("filter-category");
+      const current = select.value;
+
+      const categories = new Set();
+      stockData.forEach((p) => {
+        const c = (p.category || "").trim();
+        if (c) categories.add(c);
+      });
+
+      select.innerHTML = '<option value="">Todas</option>';
+      Array.from(categories)
+        .sort((a, b) => a.localeCompare(b))
+        .forEach((cat) => {
+          const option = document.createElement("option");
+          option.value = cat;
+          option.textContent = cat;
+          if (cat === current) option.selected = true;
+          select.appendChild(option);
+        });
+    }
+
+    // ========================
+    // RENDER TABLA + DASHBOARD
+    // ========================
+    function renderTable() {
+      const tbody = document.getElementById("stock-tbody");
+      tbody.innerHTML = "";
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const pageItems = filteredData.slice(start, end);
+
+      pageItems.forEach((p) => {
+        const tr = document.createElement("tr");
+
+        const name = p.name || "Sin nombre";
+        const category = p.category || "Sin categoría";
+        const stock = Number(p.stock || 0);
+        const min = Number(p.min_stock || p.stock_alert || 0);
+        const img = p.image || "/logo_palacio.jpg";
+        const lastSale = p.last_sale || p.ultima_venta || p.updated_at || null;
+        const status = getStatus(p);
+
+        const statusLabel =
+          status === "ok"
+            ? "OK"
+            : status === "low"
+            ? "Stock bajo"
+            : "Sin stock";
+        const statusClass =
+          status === "ok"
+            ? "chip-ok"
+            : status === "low"
+            ? "chip-low"
+            : "chip-out";
+
+        tr.innerHTML = `
+          <td>
+            <div class="product-cell">
+              <img src="${img}" alt="${name}" />
+              <div>
+                <div class="product-name">${name}</div>
+                <div class="product-meta">
+                  Código: ${p.code || p.codigo || "–"}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>${category}</td>
+          <td class="text-right">${formatNumber(stock)}</td>
+          <td class="text-right">${min ? formatNumber(min) : "–"}</td>
+          <td class="text-center">
+            <span class="chip ${statusClass}">${statusLabel}</span>
+          </td>
+          <td class="text-center">${formatDate(lastSale)}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      const summary = document.getElementById("table-summary");
+      summary.textContent = `Mostrando ${pageItems.length} de ${filteredData.length} productos`;
+
+      const maxPage = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+      document.getElementById(
+        "pagination-info"
+      ).textContent = `Página ${currentPage} de ${maxPage}`;
+
+      document.getElementById("btn-prev-page").disabled = currentPage <= 1;
+      document.getElementById("btn-next-page").disabled = currentPage >= maxPage;
+    }
+
+    function updateDashboardCards() {
+      const total = stockData.length;
+      let low = 0;
+      let out = 0;
+      const categoryCount = {};
+
+      stockData.forEach((p) => {
+        const st = getStatus(p);
+        if (st === "low") low++;
+        if (st === "out") out++;
+
+        const cat = (p.category || "Sin categoría").trim();
+        if (!categoryCount[cat]) categoryCount[cat] = 0;
+        categoryCount[cat]++;
+      });
+
+      let topCategory = "–";
+      let maxCount = 0;
+      for (const [cat, count] of Object.entries(categoryCount)) {
+        if (count > maxCount) {
+          maxCount = count;
+          topCategory = cat;
+        }
+      }
+
+      document.getElementById("card-total").textContent = formatNumber(total);
+      document.getElementById("card-low").textContent = formatNumber(low);
+      document.getElementById("card-out").textContent = formatNumber(out);
+      document.getElementById("card-top-category").textContent = topCategory;
+    }
+
+    // ========================
+    // NOTIFICACIONES
+    // ========================
+    function showLowStockToasts() {
+      if (!stockData.length) return;
+
+      const lowProducts = stockData.filter((p) => getStatus(p) === "low");
+      const outProducts = stockData.filter((p) => getStatus(p) === "out");
+
+      lowProducts.slice(0, 3).forEach((p) => {
+        const name = p.name || "Producto";
+        createToast({
+          title: "Stock bajo",
+          message: `${name} está por debajo del stock mínimo.`,
+          type: "warning",
+          timeout: 7000,
+        });
+      });
+
+      outProducts.slice(0, 3).forEach((p) => {
+        const name = p.name || "Producto";
+        createToast({
+          title: "Sin stock",
+          message: `${name} se encuentra agotado.`,
+          type: "danger",
+          timeout: 8000,
+        });
+      });
+
+      if (lowProducts.length + outProducts.length > 6) {
+        createToast({
+          title: "Más productos críticos",
+          message:
+            "Revisa el listado para ver todos los productos con problemas de stock.",
+          type: "warning",
+          timeout: 8000,
+        });
+      }
+    }
+
+    // ========================
+    // EXPORTAR CSV (Excel)
+    // ========================
+    function exportToCSV() {
+      if (!filteredData.length) {
+        createToast({
+          title: "Sin datos",
+          message: "No hay productos para exportar.",
+          type: "warning",
+        });
+        return;
+      }
+
+      const headers = [
+        "Nombre",
+        "Categoría",
+        "Código",
+        "Stock actual",
+        "Stock mínimo",
+        "Estado",
+      ];
+
+      const rows = filteredData.map((p) => {
+        const status = getStatus(p);
+        const statusLabel =
+          status === "ok"
+            ? "OK"
+            : status === "low"
+            ? "Stock bajo"
+            : "Sin stock";
+
+        const min = p.min_stock || p.stock_alert || "";
+
+        return [
+          `"${(p.name || "").replace(/"/g, '""')}"`,
+          `"${(p.category || "").replace(/"/g, '""')}"`,
+          `"${(p.code || p.codigo || "").replace(/"/g, '""')}"`,
+          p.stock || 0,
+          min,
+          statusLabel,
+        ].join(";");
+      });
+
+      const csvContent = [headers.join(";"), ...rows].join("\n");
+      const blob = new Blob([csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      const today = new Date().toISOString().slice(0, 10);
+      link.setAttribute("download", `stock_palacio_${today}.csv`);
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      createToast({
+        title: "Exportación lista",
+        message: "El archivo CSV se descargó correctamente (abre en Excel).",
+        type: "warning",
+      });
+    }
+
+    // ========================
+    // AUTO REFRESH
+    // ========================
+    function toggleAutoRefresh() {
+      autoRefresh = !autoRefresh;
+      const btn = document.getElementById("btn-auto-refresh");
+
+      if (autoRefresh) {
+        btn.textContent = "Auto ON (1 min)";
+        btn.classList.add("btn-primary");
+        autoRefreshInterval = setInterval(loadStock, 60000);
+        createToast({
+          title: "Auto actualización activa",
+          message: "El stock se actualizará automáticamente cada 1 minuto.",
+          type: "warning",
+          timeout: 6000,
+        });
+      } else {
+        btn.textContent = "Auto (1 min)";
+        btn.classList.remove("btn-primary");
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+      }
+    }
+
+    // ========================
+    // EVENTOS
+    // ========================
+    function setupEvents() {
+      document
+        .getElementById("search")
+        .addEventListener("input", () => {
+          currentPage = 1;
+          applyFiltersAndRender();
+        });
+
+      document
+        .getElementById("filter-category")
+        .addEventListener("change", () => {
+          currentPage = 1;
+          applyFiltersAndRender();
+        });
+
+      document
+        .getElementById("filter-status")
+        .addEventListener("change", () => {
+          currentPage = 1;
+          applyFiltersAndRender();
+        });
+
+      document.getElementById("sort-by").addEventListener("change", () => {
+        currentPage = 1;
+        applyFiltersAndRender();
+      });
+
+      document
+        .getElementById("btn-refresh")
+        .addEventListener("click", loadStock);
+
+      document
+        .getElementById("btn-export")
+        .addEventListener("click", exportToCSV);
+
+      document
+        .getElementById("btn-auto-refresh")
+        .addEventListener("click", toggleAutoRefresh);
+
+      document
+        .getElementById("btn-prev-page")
+        .addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+          }
+        });
+
+      document
+        .getElementById("btn-next-page")
+        .addEventListener("click", () => {
+          const maxPage = Math.max(
+            1,
+            Math.ceil(filteredData.length / PAGE_SIZE)
+          );
+          if (currentPage < maxPage) {
+            currentPage++;
+            renderTable();
+          }
+        });
+    }
+
+    // ========================
+    // INIT
+    // ========================
+    document.addEventListener("DOMContentLoaded", () => {
+      setupEvents();
+      loadStock();
+    });
+  </script>
+</body>
+</html>

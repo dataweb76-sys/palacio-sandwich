@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reservar - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 0;
+      margin: 0;
+    }
+
+    .reserva-box {
+      max-width: 750px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 14px;
+      display: block;
+      font-size: 14px;
+      color: #444;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      margin-top: 4px;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+
+    .productos-lista {
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+
+    .producto-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #eaeaea;
+      font-size: 15px;
+    }
+
+    .producto-item:last-child {
+      border-bottom: none;
+    }
+
+    .producto-item input[type="number"] {
+      width: 80px;
+      text-align: right;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      background: #ffbb00;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #ffd54a;
+    }
+
+    /* POPUP */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #popup .content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      font-size: 17px;
+    }
+
+    #popup button {
+      width: auto;
+      margin-top: 15px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="reserva-box">
+    <h2>Solicitud de Reserva</h2>
+
+    <form id="formReserva">
+
+      <label>Nombre</label>
+      <input type="text" id="nombre" required />
+
+      <label>Apellido</label>
+      <input type="text" id="apellido" required />
+
+      <label>Teléfono</label>
+      <input type="text" id="telefono" required />
+
+      <label>Código Postal</label>
+      <input type="text" id="codigo_postal" required />
+
+      <label>Provincia</label>
+      <input type="text" id="provincia" readonly />
+
+      <label>Domicilio</label>
+      <input type="text" id="domicilio" required />
+
+      <label>Ciudad</label>
+      <input type="text" id="ciudad" required />
+
+      <label>Fecha de reserva</label>
+      <input type="date" id="fecha_reserva" required />
+
+      <label>Hora en que necesitás los productos</label>
+      <input type="time" id="hora" required />
+
+      <label>Tipo de evento</label>
+      <input type="text" id="tipo_evento" placeholder="Cumpleaños, reunión, evento laboral, etc" required />
+
+      <h3 style="margin-top:25px;">Productos y Cantidades</h3>
+      <small>Indicá cuántas unidades necesitás por producto.</small>
+
+      <div id="listaProductos" class="productos-lista"></div>
+
+      <button type="submit">Solicitar presupuesto</button>
+
+    </form>
+  </div>
+
+  <!-- POPUP -->
+  <div id="popup">
+    <div class="content">
+      <h3 id="popupMessage"></h3>
+      <button onclick="cerrarPopup()">Cerrar</button>
+    </div>
+  </div>
+
+<script>
+/* ==============================
+   CARGAR PRODUCTOS DESDE BACKEND
+================================*/
+async function cargarProductos() {
+  try {
+    const res = await fetch("/reservas/productos");
+    const productos = await res.json();
+
+    const cont = document.getElementById("listaProductos");
+    cont.innerHTML = "";
+
+    productos.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "producto-item";
+      div.innerHTML = `
+        <span>${p.name}</span>
+        <input type="number" min="0" value="0" data-producto="${p.name}">
+      `;
+      cont.appendChild(div);
+    });
+
+  } catch (e) {
+    console.error("Error cargando productos:", e);
+  }
+}
+
+cargarProductos();
+
+/* ==============================
+   AUTO COMPLETAR PROVINCIA POR CP
+================================*/
+document.getElementById("codigo_postal").addEventListener("blur", async function () {
+  const cp = this.value.trim();
+  if (!cp) return;
+
+  try {
+    const res = await fetch(`https://apis.datos.gob.ar/georef/api/codigos_postales?codigo_postal=${cp}`);
+    const data = await res.json();
+
+    if (data.codigos_postales?.length > 0) {
+      document.getElementById("provincia").value =
+        data.codigos_postales[0].provincia.nombre;
+    }
+  } catch (e) {
+    console.error("Error obteniendo provincia:", e);
+  }
+});
+
+/* ==============================
+   ENVIAR FORMULARIO AL BACKEND
+================================*/
+document.getElementById("formReserva").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  // recopilar productos
+  const productos = [];
+  document.querySelectorAll("#listaProductos input").forEach(input => {
+    const cant = parseInt(input.value);
+    if (!isNaN(cant) && cant > 0) {
+      productos.push({
+        producto: input.dataset.producto,
+        cantidad: cant
+      });
+    }
+  });
+
+  const body = {
+    nombre: document.getElementById("nombre").value.trim(),
+    apellido: document.getElementById("apellido").value.trim(),
+    telefono: document.getElementById("telefono").value.trim(),
+    codigo_postal: document.getElementById("codigo_postal").value.trim(),
+    provincia: document.getElementById("provincia").value.trim(),
+    domicilio: document.getElementById("domicilio").value.trim(),
+    ciudad: document.getElementById("ciudad").value.trim(),
+    fecha_reserva: document.getElementById("fecha_reserva").value,
+    hora: document.getElementById("hora").value,
+    tipo_evento: document.getElementById("tipo_evento").value.trim(),
+    productos
+  };
+
+  try {
+    const r = await fetch("/reservas/public", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    if (r.ok) {
+      mostrarPopup(
+        `Hola ${body.nombre}, en breve te enviaremos por *WhatsApp* el presupuesto solicitado para tu reserva.\n\n¡Gracias por elegir a *El Palacio del Sándwich*! 🥪`
+      );
+
+      document.getElementById("formReserva").reset();
+      document.getElementById("provincia").value = "";
+      cargarProductos();
+    } else {
+      mostrarPopup("Hubo un error al enviar la reserva. Intentá de nuevo.");
+    }
+
+  } catch (e) {
+    console.error(e);
+    mostrarPopup("Ocurrió un error. Volvé a intentar.");
+  }
+});
+
+/* ==============================
+   POPUP
+================================*/
+function mostrarPopup(texto) {
+  document.getElementById("popupMessage").innerText = texto;
+  document.getElementById("popup").style.display = "flex";
+}
+
+function cerrarPopup() {
+  document.getElementById("popup").style.display = "none";
+}
+</script>
+
+</body>
+</html>

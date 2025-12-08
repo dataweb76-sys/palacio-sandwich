@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery – El Palacio del Sándwich</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Montserrat", sans-serif;
+      background: #f5f5f5;
+    }
+
+    /* HEADER */
+    .checkout-header {
+      background: #d62828;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    }
+
+    .checkout-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .checkout-header-title h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .checkout-header-title small {
+      font-size: 12px;
+      opacity: .9;
+    }
+
+    .checkout-wrapper {
+      max-width: 520px;
+      margin: 24px auto;
+      padding: 0 12px;
+    }
+
+    .checkout-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      padding: 18px;
+    }
+
+    .resumen-lista {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .resumen-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .input-label {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .costo-box {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+
+    .btn-confirmar {
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: #2e7d32;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn-volver {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: #555;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* POPUP */
+    #popupFinal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      justify-content: center;
+      align-items: center;
+      z-index: 99;
+    }
+
+    #popupFinal .box {
+      background: #fff;
+      padding: 22px;
+      border-radius: 16px;
+      text-align: center;
+      width: 90%;
+      max-width: 380px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      animation: fadeIn .25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="checkout-header">
+    <img src="logo_palacio.jpg" />
+    <div class="checkout-header-title">
+      <h1>Delivery</h1>
+      <small>Completá tus datos para enviar el pedido</small>
+    </div>
+  </header>
+
+  <main class="checkout-wrapper">
+    <div class="checkout-card">
+
+      <h3>🧾 Tu pedido</h3>
+      <div id="resumenCarrito" class="resumen-lista"></div>
+
+      <div class="costo-box">
+        <span>Subtotal</span>
+        <strong id="subtotalTexto">$0</strong>
+      </div>
+
+      <div class="costo-box">
+        <span>Costo de envío</span>
+        <strong id="costoEnvio">$0</strong>
+      </div>
+
+      <div class="costo-box">
+        <span>Total</span>
+        <strong id="totalFinal">$0</strong>
+      </div>
+
+      <label class="input-label">Nombre completo</label>
+      <input id="nombre" class="input-field" placeholder="Ej: Juan Pérez" />
+
+      <label class="input-label">Teléfono</label>
+      <input id="telefono" class="input-field" placeholder="Ej: 2954 123456" />
+
+      <label class="input-label">Dirección</label>
+      <input id="direccion" class="input-field" placeholder="Ej: Edison 1500" />
+
+      <!-- NUEVO: HORA ESTIMADA DE ENTREGA -->
+      <label class="input-label">Hora estimada de entrega</label>
+      <input id="horaEntrega" type="time" class="input-field" />
+
+      <label class="input-label">Forma de pago</label>
+      <select id="formaPago" class="input-field">
+        <option value="efectivo">Efectivo</option>
+        <option value="tarjeta">Tarjeta</option>
+        <option value="qr">Transferencia / QR</option>
+      </select>
+
+      <div id="qrSection" style="display:none;">
+        <p>Subí tu comprobante:</p>
+        <input id="comprobanteQR" type="file" class="input-field" accept="image/*" />
+      </div>
+
+      <button class="btn-confirmar" onclick="finalizarDelivery()">Confirmar pedido</button>
+      <button class="btn-volver" onclick="window.location.href='index.html'">Volver</button>
+
+    </div>
+  </main>
+
+  <!-- POPUP -->
+  <div id="popupFinal">
+    <div class="box">
+      <h2>¡Gracias por elegirnos! 🥪</h2>
+      <p>
+        Tu pedido está siendo preparado.<br>
+        Cuando esté listo para salir a tu domicilio te avisaremos por WhatsApp.
+      </p>
+    </div>
+  </div>
+
+  <script src="checkout_delivery.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial de Ventas - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dashboard-body">
+  <header class="dashboard-header">
+    <div class="dashboard-title">Historial de Ventas</div>
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver al panel</button>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Historial de Ventas (próximamente funcional)</h2>
+    <p>Acá vamos a listar ventas, filtrar por día/mes y exportar.</p>
+  </main>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function goBack() { window.location.href = "dashboard.html"; }
+    function logout() { localStorage.removeItem("token"); window.location.href = "login.html"; }
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="admin-header">
+  <span>Reportes - El Palacio del Sándwich</span>
+  <div class="header-actions">
+    <button onclick="window.location.href='admin.html'">Volver</button>
+    <button id="logout">Cerrar sesión</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <h2>Ventas por Día</h2>
+  <input type="date" id="filtro-dia">
+  <button onclick="cargarVentasDia()">Ver</button>
+  <canvas id="chartDia" height="150"></canvas>
+
+  <hr>
+
+  <h2>Ventas por Mes</h2>
+  <input type="month" id="filtro-mes">
+  <button onclick="cargarVentasMes()">Ver</button>
+  <canvas id="chartMes" height="150"></canvas>
+
+  <hr>
+
+  <h2>Productos más vendidos</h2>
+  <canvas id="chartProductos" height="150"></canvas>
+
+  <hr>
+
+  <h2>Promos más vendidas</h2>
+  <canvas id="chartPromos" height="150"></canvas>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "login.html";
+
+document.getElementById("logout").onclick = () => {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+};
+
+const HEADERS = { "Authorization": "Bearer " + token };
+
+// =================== GRÁFICO POR DÍA =====================
+async function cargarVentasDia() {
+  const dia = document.getElementById("filtro-dia").value;
+  if (!dia) return alert("Seleccione un día");
+
+  const res = await fetch(`/ventas/fecha/${dia}`, { headers: HEADERS });
+  const datos = await res.json();
+
+  const labels = datos.map(v => v.producto_nombre || "Promo");
+  const valores = datos.map(v => v.precio_total);
+
+  new Chart(document.getElementById("chartDia"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: "Ventas", data: valores }] }
+  });
+}
+
+// =================== GRÁFICO POR MES =====================
+async function cargarVentasMes() {
+  const mes = document.getElementById("filtro-mes").value;
+  if (!mes) return alert("Seleccione un mes");
+
+  const res = await fetch(`/ventas/mes/${mes}`, { headers: HEADERS });
+  const datos = await res.json();
+
+  const porDia = {};
+
+  datos.forEach(v => {
+    if (!porDia[v.fecha]) porDia[v.fecha] = 0;
+    porDia[v.fecha] += v.precio_total;
+  });
+
+  const labels = Object.keys(porDia);
+  const valores = Object.values(porDia);
+
+  new Chart(document.getElementById("chartMes"), {
+    type: "line",
+    data: { labels, datasets: [{ label: "Total diario", data: valores }] }
+  });
+}
+
+// =================== PRODUCTOS MÁS VENDIDOS ==============
+async function cargarProductosVendidos() {
+  const res = await fetch(`/ventas`, { headers: HEADERS });
+  const datos = await res.json();
+
+  const conteo = {};
+
+  datos.forEach(v => {
+    const name = v.producto_nombre || "Promo";
+    if (!conteo[name]) conteo[name] = 0;
+    conteo[name] += v.cantidad;
+  });
+
+  new Chart(document.getElementById("chartProductos"), {
+    type: "pie",
+    data: {
+      labels: Object.keys(conteo),
+      datasets: [{ data: Object.values(conteo) }]
+    }
+  });
+}
+
+// =================== PROMOS ======================
+async function cargarPromosVendidas() {
+  const res = await fetch(`/ventas`, { headers: HEADERS });
+  const datos = await res.json();
+
+  const conteo = {};
+
+  datos.filter(v => !v.producto_id).forEach(v => {
+    if (!conteo[v.producto_nombre]) conteo[v.producto_nombre] = 0;
+    conteo[v.producto_nombre] += v.cantidad;
+  });
+
+  new Chart(document.getElementById("chartPromos"), {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(conteo),
+      datasets: [{ data: Object.values(conteo) }]
+    }
+  });
+}
+
+cargarProductosVendidos();
+cargarPromosVendidas();
+</script>
+
+</body>
+</html>

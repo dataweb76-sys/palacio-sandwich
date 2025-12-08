@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Categorías - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="dashboard-body">
+
+  <header class="dashboard-header">
+    <div class="dashboard-title">Gestión de Categorías</div>
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver al panel</button>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h2>Listado de Categorías</h2>
+      <button class="btn-primary" onclick="openModal()">+ Nueva categoría</button>
+    </div>
+
+    <table class="tabla" id="tablaCategorias">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Imagen</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Se llena desde categorias.js -->
+      </tbody>
+    </table>
+
+    <p id="msgTabla" class="mensaje" style="margin-top:10px;"></p>
+
+  </main>
+
+  <!-- ===============================
+       MODAL CREAR / EDITAR
+  ================================== -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+
+      <h3 id="modalTitulo">Nueva Categoría</h3>
+
+      <input type="hidden" id="cat_id" />
+
+      <label>Nombre</label>
+      <input id="cat_nombre" class="form-control" />
+
+      <label>Tipo</label>
+      <select id="cat_tipo" class="form-control">
+        <option value="producto">Producto</option>
+        <option value="promocion">Promoción</option>
+        <option value="cliente">Cliente (visible en la página del cliente)</option>
+        <option value="reserva">Reserva (categorías para formulario de reserva)</option>
+      </select>
+
+      <div id="bloqueImagen" style="display:none; margin-top:10px;">
+        <label>Imagen (solo CLIENTE o RESERVA)</label>
+        <input type="file" id="cat_image" accept="image/*" />
+      </div>
+
+      <div id="previewWrap" style="display:none; margin-top:10px;">
+        <label>Imagen actual:</label><br />
+        <img id="previewImg" src="" width="120" style="border-radius:10px;" />
+      </div>
+
+      <p id="msgCat" class="mensaje" style="margin-top:10px;"></p>
+
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="guardarCategoria()">Guardar</button>
+        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="categorias.js"></script>
+</body>
+</html>

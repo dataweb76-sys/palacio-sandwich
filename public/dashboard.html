@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="dashboard-body">
+  <header class="dashboard-header">
+    <div class="dashboard-title">Panel de Administración - El Palacio del Sándwich</div>
+    <div>
+      <button class="btn-logout" onclick="irHome()">Ver web</button>
+      <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- RESUMEN GENERAL -->
+    <h2>Resumen general</h2>
+
+    <div class="dashboard-grid stats-grid">
+      <div class="dash-card">
+        <h3>Productos</h3>
+        <p id="stat-productos" class="stat-num">0</p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Promociones</h3>
+        <p id="stat-promos" class="stat-num">0</p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Pedidos pendientes</h3>
+        <p id="stat-pendientes" class="stat-num">0</p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Stock bajo</h3>
+        <p id="stat-stock-bajo" class="stat-num">0</p>
+      </div>
+
+      <div class="dash-card">
+        <h3>Último producto</h3>
+        <p id="stat-ultimo" class="stat-num-small">-</p>
+      </div>
+    </div>
+
+    <!-- ACCESOS RÁPIDOS -->
+    <h2 style="margin-top: 30px;">Accesos rápidos</h2>
+
+    <div class="dashboard-grid actions-grid">
+
+      <div class="dash-card action-card" onclick="irProductos()">
+        <div class="dash-icon">🥪</div>
+        <h3>Productos</h3>
+        <p>Alta y edición de productos, precios y stock.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irPromos()">
+        <div class="dash-icon">🎉</div>
+        <h3>Promociones</h3>
+        <p>Gestionar combos, promos especiales y precios.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irCategorias()">
+        <div class="dash-icon">🏷️</div>
+        <h3>Categorías</h3>
+        <p>Crear nuevas categorías para el menú.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irPedidos()">
+        <div class="dash-icon">🛎️</div>
+        <h3>Pedidos online</h3>
+        <p>Ver pedidos en tiempo real del sitio web.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irReportes()">
+        <div class="dash-icon">📊</div>
+        <h3>Reportes y Excel</h3>
+        <p>Exportar ventas del día, mes y más.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irStock()">
+        <div class="dash-icon">📦</div>
+        <h3>Stock / Materia prima</h3>
+        <p>Control de stock, ingresos y egresos.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irEnvios()">
+        <div class="dash-icon">🚚</div>
+        <h3>Configuración de envíos</h3>
+        <p>Zonas, costo de envío y envío gratis.</p>
+      </div>
+
+      <div class="dash-card action-card" onclick="irAdmins()">
+        <div class="dash-icon">🧑‍💻</div>
+        <h3>Administrar usuarios</h3>
+        <p>Solo SUPERADMIN: altas/bajas de admins.</p>
+      </div>
+
+    </div>
+	<li onclick="location.href='reservas_admin.html'" class="action-card">
+  📅 Reservas
+  <span id="badgeReservas" class="notif-badge">0</span>
+</li>
+
+
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

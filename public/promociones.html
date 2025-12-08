@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Promociones - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="dashboard-body">
+
+  <header class="dashboard-header">
+    <div class="dashboard-title">Gestión de Promociones</div>
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver al Panel</button>
+      <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <button class="btn-primary" onclick="openPromoModal()">+ Nueva Promoción</button>
+
+    <h2>Listado de Promociones</h2>
+
+    <table class="tabla" id="tablaPromos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Imagen</th>
+          <th>Título</th>
+          <th>Categoría</th>
+          <th>Precio (ARS)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  </main>
+
+  <!-- MODAL PROMOCIONES -->
+  <div id="promoModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="promoModalTitulo">Nueva Promoción</h3>
+
+      <input type="hidden" id="promo_id" />
+
+      <label>Título de la promoción</label>
+      <input id="promo_title" />
+
+      <label>Precio (ARS / USD)</label>
+      <div class="row-2">
+        <input id="promo_price" type="number" placeholder="Precio en ARS" />
+        <input id="promo_price_usd" type="text" placeholder="USD auto" disabled />
+      </div>
+
+      <label>Descripción</label>
+      <textarea id="promo_desc"></textarea>
+
+      <label>Categoría (solo de promociones)</label>
+      <input id="promo_categoria" list="listaCategoriasPromo" placeholder="Ej: Combos, 2x1..." />
+      <datalist id="listaCategoriasPromo"></datalist>
+
+      <label>Imagen</label>
+      <input type="file" id="promo_image" />
+
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="guardarPromo()">Guardar</button>
+        <button class="btn-secondary" onclick="closePromoModal()">Cancelar</button>
+      </div>
+
+      <p id="msgPromo" class="mensaje"></p>
+    </div>
+  </div>
+
+  <script src="promociones.js"></script>
+</body>
+</html>

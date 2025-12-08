@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrar Usuarios - Superadmin</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="dashboard-body">
+
+<header class="dashboard-header">
+  <div class="dashboard-title">Administración de Usuarios</div>
+  <div>
+    <button class="btn-logout" onclick="goBack()">Volver al Panel</button>
+    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <h2>Crear nuevo administrador</h2>
+
+  <form id="form-admin" class="admin-form">
+    <label>Usuario</label>
+    <input id="admin_user" required />
+
+    <label>Contraseña</label>
+    <input id="admin_pass" type="password" required />
+
+    <label>Rol</label>
+    <select id="admin_role">
+      <option value="admin">Admin (normal)</option>
+    </select>
+
+    <button class="btn-primary" type="submit">Crear Admin</button>
+    <p id="admin-msg" class="mensaje"></p>
+  </form>
+
+  <h2>Lista de administradores</h2>
+
+  <table class="tabla" id="tablaAdmins">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</main>
+
+<script src="admin-config.js"></script>
+
+</body>
+</html>

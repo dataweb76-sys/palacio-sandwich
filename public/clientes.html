@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .dashboard-header {
+      background: #d62828;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+    }
+
+    .dashboard-title {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .container {
+      margin: 25px auto;
+      max-width: 1200px;
+      background: #fff;
+      padding: 18px;
+      border-radius: 16px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .cards-resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card-resumen {
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8f8f8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+    }
+
+    .card-resumen h4 {
+      margin: 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    .card-resumen .valor {
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #d62828;
+    }
+
+    .card-resumen .sub {
+      font-size: 12px;
+      color: #777;
+      margin-top: 2px;
+    }
+
+    .layout-clientes {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .layout-clientes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-principal {
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .panel-lateral {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid #eee;
+    }
+
+    .panel-lateral h3 {
+      margin-top: 0;
+      font-size: 16px;
+    }
+
+    .lista-top {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .lista-top li {
+      padding: 6px 0;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .lista-top span {
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    thead {
+      background: #d62828;
+      color: white;
+    }
+
+    .btn-detalle {
+      background: #1565c0;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      font-size: 13px;
+    }
+
+    #modalCliente {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: rgba(0, 0, 0, .55);
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+    }
+
+    #modalCliente .box {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 95%;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .3);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .btn-cerrar {
+      margin-top: 12px;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      background: #d62828;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-nota {
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .nota-item {
+      font-size: 12px;
+      padding: 4px 0;
+      border-bottom: 1px dashed #ddd;
+    }
+
+    .nota-item strong {
+      color: #333;
+    }
+
+    .seccion-modal {
+      margin-bottom: 12px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .seccion-modal h4 {
+      margin: 4px 0 6px;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    .chips-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip-item {
+      background: #ffe0b2;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- HEADER -->
+  <header class="dashboard-header">
+    <div class="dashboard-title">Clientes</div>
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver al panel</button>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="container">
+    <h2>Clientes registrados</h2>
+
+    <!-- CARDS RESUMEN -->
+    <div class="cards-resumen">
+      <div class="card-resumen">
+        <h4>Total clientes</h4>
+        <div id="cli-total" class="valor">0</div>
+      </div>
+      <div class="card-resumen">
+        <h4>Cliente top</h4>
+        <div id="cli-top-nombre" class="valor">–</div>
+        <div id="cli-top-monto" class="sub">Total: $0</div>
+      </div>
+      <div class="card-resumen">
+        <h4>Total gastado (histórico)</h4>
+        <div id="cli-total-gastado" class="valor">$0</div>
+      </div>
+      <div class="card-resumen">
+        <h4>Promedio pedidos / cliente</h4>
+        <div id="cli-prom-pedidos" class="valor">0</div>
+      </div>
+    </div>
+
+    <div class="layout-clientes">
+      <!-- PANEL PRINCIPAL: BUSCADOR + TABLA -->
+      <section class="panel-principal">
+        <input
+          type="text"
+          id="buscar"
+          placeholder="Buscar por nombre o teléfono..."
+          style="padding:10px;width:100%;border-radius:8px;border:1px solid #ccc;margin-bottom:12px;">
+
+        <table id="tablaClientes">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Teléfono</th>
+              <th>Pedidos</th>
+              <th>Total gastado</th>
+              <th>Última compra</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- PANEL LATERAL: TOP CLIENTES -->
+      <aside class="panel-lateral">
+        <h3>Top clientes (por gasto)</h3>
+        <ul id="listaTopClientes" class="lista-top"></ul>
+      </aside>
+    </div>
+  </main>
+
+  <!-- MODAL -->
+  <div id="modalCliente">
+    <div class="box">
+      <h3 id="clienteNombre"></h3>
+
+      <div id="resumenCliente" class="seccion-modal"></div>
+
+      <div class="seccion-modal">
+        <h4>Notas del cliente</h4>
+        <button class="btn-nota" onclick="agregarNotaCliente()">+ Agregar nota</button>
+        <div id="listaNotas"></div>
+      </div>
+
+      <div class="seccion-modal">
+        <h4>Items más frecuentes</h4>
+        <div id="itemsFrecuentes" class="chips-items"></div>
+      </div>
+
+      <div class="seccion-modal">
+        <h4>Historial de compras</h4>
+        <div id="detalleCliente"></div>
+      </div>
+
+      <button class="btn-cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="clientes.js"></script>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function goBack() { window.location.href = "admin.html"; }
+    function logout() { localStorage.removeItem("token"); window.location.href = "login.html"; }
+  </script>
+
+</body>
+</html>

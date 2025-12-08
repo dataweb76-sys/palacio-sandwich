@@ -1,0 +1,1402 @@
+/* ============================================================
+   RESET + BASE
+============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body.home-body {
+  background: #f5f5f5;
+  color: #222;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   NAVBAR
+============================================================ */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #d62828;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  color: #fff;
+  z-index: 2000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nav-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-icon {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.btn-menu {
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* ============================================================
+   MENÚ LATERAL
+============================================================ */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -260px;
+  width: 240px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -3px 0 12px rgba(0,0,0,0.25);
+  padding: 20px;
+  z-index: 2100;
+  transition: right .3s ease;
+}
+.side-menu.open { right: 0; }
+
+.close-menu {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  float: right;
+}
+
+.side-menu a {
+  display: block;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #333;
+}
+
+.pedido-btn {
+  margin-top: 18px;
+  width: 100%;
+  background: #d62828;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ============================================================
+   MAIN + GRID
+============================================================ */
+.home-main {
+  padding-top: 70px;
+  padding-bottom: 40px;
+  max-width: 1280px;
+  margin: auto;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* ============================================================
+   HERO
+============================================================ */
+.hero-banner {
+  width: 100%;
+  height: 320px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  margin: 10px auto 25px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0,0,0,0.22),
+    rgba(0,0,0,0.60)
+  );
+  z-index: 1;
+}
+
+.hero-logo-centered {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  z-index: 3;
+}
+
+.hero-text {
+  position: absolute;
+  top: 110px;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  z-index: 3;
+}
+
+.hero-text h1 {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.hero-text p {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.hero-buttons {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+.hero-btn {
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.hero-btn-amarillo {
+  background: #ffcd34;
+  color: #000;
+}
+
+.hero-btn-rojo {
+  background: #d62828;
+  color: #fff;
+}
+
+.hero-btn-gris {
+  background: #333;
+  color: #fff;
+}
+
+/* BOTÓN RESERVA MÁS MODERNO */
+.hero-btn-reserva {
+  background: linear-gradient(135deg, #673ab7, #e91e63);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-btn-reserva::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: rgba(255,255,255,0.25);
+  transform: skewX(-25deg);
+  transition: transform .3s ease;
+}
+
+.hero-btn-reserva:hover::after {
+  transform: translateX(220%) skewX(-25deg);
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.hero-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.6);
+  cursor: pointer;
+}
+.hero-dot.active {
+  background: #fff;
+}
+
+/* ============================================================
+   BOXES GENERALES
+============================================================ */
+.home-box {
+  background: #fff;
+  padding: 14px;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* ============================================================
+   PROMOS
+============================================================ */
+.titulo-seccion {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.promo-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 14px;
+}
+
+.promo-card {
+  min-width: 220px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  text-align: center;
+}
+
+.promo-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   REDES + GOOGLE
+============================================================ */
+.redes-horiz {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.btn-red-social {
+  width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.google-box {
+  background: #fff;
+  padding: 12px;
+  border-radius: 14px;
+  margin-top: 4px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.google-rating {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.google-review {
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.google-user {
+  font-size: 12px;
+  color: #666;
+}
+
+.google-btn {
+  display: inline-block;
+  background: #d62828;
+  padding: 8px 12px;
+  color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   MAPA
+============================================================ */
+.mini-mapa {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  margin-top: 12px;
+  border: none;
+}
+
+.widget-direccion {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* ============================================================
+   PANEL DERECHO
+============================================================ */
+.home-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Carrusel lateral */
+.carrusel-derecha {
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.foto-carrusel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .6s ease-in-out;
+}
+.foto-carrusel.active {
+  opacity: 1;
+}
+
+/* Widget horario + botones */
+.widget-box {
+  background: #fff;
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-size: 13px;
+}
+
+.horario-box {
+  font-size: 12px;
+  background: #f3f3f3;
+  padding: 6px 8px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.abierto-cerrado {
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.widget-botones {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.btn-whatsapp-img img {
+  width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.btn-maps,
+.btn-call {
+  flex: 1;
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 12px;
+  color: #fff;
+}
+
+.btn-maps { background: #1976d2; }
+.btn-call { background: #d62828; }
+
+/* Botones genéricos */
+.btn-primary {
+  background: #d62828;
+  color: #fff;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ============================================================
+   POPUPS
+============================================================ */
+
+.popup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 5000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.popup-box {
+  width: 95%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  animation: appear .25s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: scale(.93); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.popup-close,
+.popup-back {
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.popup-footer {
+  margin-top: 10px;
+}
+
+.btn-ver-carrito {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #d62828;
+  color: #d62828;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* POPUP CATEGORÍAS */
+.categoria-popup-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f7f7f7;
+  cursor: pointer;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.categoria-popup-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* POPUP PRODUCTOS */
+.producto-popup-card {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fafafa;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.producto-popup-card img {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.producto-info {
+  flex: 1;
+}
+
+.producto-nombre {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.producto-descripcion {
+  font-size: 13px;
+  color: #666;
+}
+
+.producto-precio {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.btn-agregar {
+  margin-top: 8px;
+  background: #d62828;
+  color: #fff;
+  width: 100%;
+  padding: 8px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* POPUP CARRITO LATERAL */
+.popup-carrito {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 360px;
+  height: 100%;
+  background: #fff;
+  z-index: 6000;
+  padding: 18px;
+  box-shadow: -3px 0 10px rgba(0,0,0,.25);
+  transition: right .3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-carrito.abierto { right: 0; }
+
+.popupCarrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-cerrar-carrito {
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.popupCarrito-body {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.popupCarrito-footer {
+  margin-top: 10px;
+}
+
+.total-linea {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.btn-confirmar {
+  width: 100%;
+  padding: 11px;
+  background: #d62828;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 9px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+/* FOOTER */
+.home-footer {
+  text-align: center;
+  padding: 14px;
+  color: #eee;
+  background: #222;
+  margin-top: 30px;
+  font-size: 12px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-banner {
+    height: 240px;
+  }
+
+  .popup-carrito {
+    width: 100%;
+    right: -100%;
+  }
+}
+/* ============================================================
+   EFECTOS HOVER Y ANIMACIÓN MODERNA
+============================================================ */
+
+/* Botones del hero */
+.hero-btn {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.hero-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+}
+
+.hero-btn:active {
+  transform: scale(0.95);
+}
+
+/* Categorías (popup) */
+.categoria-popup-card {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.categoria-popup-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+/* Productos dentro del popup */
+.producto-popup-card {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.producto-popup-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,.2);
+}
+
+/* Botón AGREGAR */
+.btn-agregar {
+  transition: transform .18s ease, background .18s ease;
+}
+
+.btn-agregar:hover {
+  transform: scale(1.05);
+  background: #b71c1c;
+}
+
+.btn-agregar:active {
+  transform: scale(0.95);
+}
+/* ============================
+   POPUP RETIRO LOCAL NUEVO
+============================ */
+
+.retiro-box {
+  width: 95%;
+  max-width: 380px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  animation: fadeIn .25s ease;
+}
+
+.retiro-titulo {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.retiro-sub {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  color: #555;
+  font-size: 14px;
+}
+
+.retiro-label {
+  font-weight: 600;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.retiro-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+.btn-confirmar-retiro {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #d62828;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-confirmar-retiro:hover {
+  background: #b81818;
+}
+
+.btn-cancelar-retiro {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+/* Animaciones */
+.open-animation {
+  animation: popupOpen .25s ease forwards;
+}
+
+.close-animation {
+  animation: popupClose .25s ease forwards;
+}
+
+@keyframes popupOpen {
+  from { opacity: 0; transform: scale(.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes popupClose {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(.9); }
+}
+
+/* Iconos internos */
+.retiro-input {
+  background-position: 10px center;
+  background-repeat: no-repeat;
+  padding-left: 38px !important;
+}
+
+#retiroNombre {
+  background-image: url('https://cdn-icons-png.flaticon.com/512/1077/1077114.png');
+  background-size: 18px;
+}
+
+#retiroTelefono {
+  background-image: url('https://cdn-icons-png.flaticon.com/512/724/724664.png');
+  background-size: 18px;
+}
+
+#retiroHora {
+  background-image: url('https://cdn-icons-png.flaticon.com/512/1827/1827370.png');
+  background-size: 18px;
+}
+/* ============================================================
+   POPUP RETIRO LOCAL – ESTILOS LINDOS
+============================================================ */
+.retiro-box {
+  max-width: 420px;
+  margin: 0 auto;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.30);
+  background: #fff;
+}
+
+.retiro-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.retiro-sub {
+  font-size: 13px;
+  color: #555;
+  margin: 8px 0 14px;
+  text-align: center;
+}
+
+.retiro-label {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.retiro-input {
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s, transform .1s;
+}
+
+.retiro-input:focus {
+  outline: none;
+  border-color: #d62828;
+  box-shadow: 0 0 0 2px rgba(214,40,40,0.15);
+}
+
+/* Estados de validación */
+.retiro-input-error {
+  border-color: #e53935 !important;
+  box-shadow: 0 0 0 2px rgba(229,57,53,0.25);
+  animation: inputShake .15s linear 2;
+}
+
+.retiro-input-ok {
+  border-color: #2e7d32 !important;
+  box-shadow: 0 0 0 2px rgba(46,125,50,0.25);
+}
+
+@keyframes inputShake {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-2px); }
+  50%  { transform: translateX(2px); }
+  75%  { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.btn-confirmar-retiro {
+  width: 100%;
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #2e7d32;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  transition: transform .1s, box-shadow .1s, background .2s;
+}
+
+.btn-confirmar-retiro:hover {
+  background: #1b5e20;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
+}
+
+.btn-cancelar-retiro {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Animación suave al abrir */
+.popup-anim {
+  animation: appear .25s ease;
+}
+
+/* Controles del carrito más prolijos */
+.cart-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.cart-btn {
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  background: #eee;
+  font-weight: bold;
+}
+
+.cart-delete {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cart-subtotal {
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Efecto lindo para los botones del hero */
+.hero-btn {
+  transition: transform .15s, box-shadow .15s, opacity .15s;
+}
+
+.hero-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  opacity: 0.95;
+}
+.redes-limpias {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.btn-red-clean img {
+  width: 240px;        /* tamaño ideal, ajustable */
+  max-width: 90vw;
+  border-radius: 14px;
+  display: block;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  transition: 0.25s ease;
+}
+
+.btn-red-clean img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+/* CONTENEDOR — solo organiza, NO tiene fondo */
+.redes-limpias {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* BOTÓN — solo la imagen, sin recuadro */
+.red-btn img {
+  width: 260px;        /* ajustá si querés más chico o grande */
+  max-width: 95vw;     /* responsivo */
+  border-radius: 16px; /* queda más lindo el botón */
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  display: block;
+  transition: 0.25s;
+}
+
+/* efecto hover */
+.red-btn img:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+}
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.social-btn img {
+  width: 100%;
+  max-width: 360px;  /* ajusta si querés más grande o más chico */
+  border-radius: 20px;
+  display: block;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.social-btn img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.3);
+}
+
+@media (min-width: 700px) {
+  .social-buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+/* CONTENEDOR FLEXIBLE */
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  margin: 25px 0;
+}
+
+/* BOTÓN */
+.social-btn img {
+  width: 100%;
+  max-width: 370px;
+  border-radius: 22px;
+  display: block;
+  
+  /* SOMBRA 3D SUAVE */
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25), 
+              0 3px 6px rgba(0,0,0,0.18);
+
+  /* Efecto de resplandor */
+  filter: drop-shadow(0 0 3px rgba(255,255,255,0.4));
+
+  transition: 
+    transform .25s ease,
+    box-shadow .25s ease,
+    filter .25s ease;
+}
+
+/* EFECTO AL PASAR EL DEDO O MOUSE */
+.social-btn img:hover {
+  transform: translateY(-4px) scale(1.05);
+  
+  /* Sombra más fuerte */
+  box-shadow: 0 15px 30px rgba(0,0,0,0.30);
+
+  /* Brillo ligero */
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.7));
+}
+
+/* PANTALLA GRANDE */
+@media (min-width: 700px) {
+  .social-buttons {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+/* EFECTO REBOTE SUAVE EN CELULAR */
+.social-btn img:active {
+  transform: scale(0.93);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.28);
+  transition: transform 0.1s ease;
+}
+
+/* ============================================================
+   POPUP RESERVAS – NUEVO
+============================================================ */
+
+.reserva-box {
+  max-width: 520px;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  background: #ffffff;
+}
+
+.reserva-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.reserva-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 10px;
+}
+
+.reserva-logo {
+  width: 80px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.reserva-sub {
+  font-size: 13px;
+  color: #555;
+  margin: 6px 0 12px;
+  text-align: center;
+}
+
+.reserva-subtitulo {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.reserva-sub-mini {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 8px;
+}
+
+.reserva-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reserva-input {
+  width: 100%;
+  margin-top: 3px;
+  padding: 9px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.reserva-input:focus {
+  outline: none;
+  border-color: #673ab7;
+  box-shadow: 0 0 0 2px rgba(103,58,183,0.18);
+}
+
+.reserva-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+  margin-bottom: 4px;
+}
+
+.reserva-form-col {
+  width: 100%;
+}
+
+/* CATEGORÍAS DE RESERVA */
+.reserva-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.reserva-categoria-card {
+  background: #f7f3ff;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer;
+  text-align: center;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.reserva-categoria-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  background: #ede3ff;
+}
+
+.reserva-categoria-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 4px;
+}
+
+.reserva-categoria-nombre {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* PRODUCTOS DE RESERVA */
+.reserva-productos-wrapper {
+  margin-top: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+
+.reserva-productos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 6px;
+}
+
+.btn-volver-cat {
+  border: none;
+  background: #eee;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.reserva-productos {
+  max-height: 260px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.reserva-producto-card {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #fafafa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.reserva-producto-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.reserva-prod-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.reserva-prod-nombre {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.reserva-prod-desc {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+  flex: 1;
+}
+
+.reserva-prod-controles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.reserva-cant-input {
+  width: 52px;
+  text-align: center;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+}
+
+.btn-cant {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #eee;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* BOTONES RESERVA */
+.reserva-buttons {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-confirmar-reserva {
+  width: 100%;
+  padding: 11px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+.btn-confirmar-reserva:hover {
+  filter: brightness(1.03);
+}
+
+.btn-cancelar-reserva {
+  width: 100%;
+  padding: 9px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* POPUP MENSAJE RESERVA */
+.reserva-msg-box {
+  max-width: 420px;
+  text-align: center;
+}
+
+.reserva-msg-box h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.reserva-msg-box p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+/* RESPONSIVE POPUP RESERVA */
+@media (max-width: 600px) {
+  .reserva-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .reserva-productos {
+    max-height: 220px;
+  }
+}

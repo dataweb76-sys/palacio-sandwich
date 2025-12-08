@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservas - Panel de Administración</title>
+    <link rel="stylesheet" href="/admin/styles.css">
+    <style>
+        body { background:#f2f2f2; font-family: 'Inter', sans-serif; }
+        .container { max-width:1200px; margin:auto; padding:20px; }
+
+        h2 { margin-top:20px; margin-bottom:20px; font-weight:600; }
+
+        table {
+            width:100%;
+            background:white;
+            border-radius:10px;
+            overflow:hidden;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding:12px;
+            border-bottom:1px solid #eee;
+        }
+        th { background:#fafafa; text-align:left; font-weight:600; }
+        tr:hover { background:#f9f9f9; }
+
+        .btn-ver {
+            padding:8px 14px;
+            background:#ffbb00;
+            border-radius:8px;
+            color:black;
+            text-decoration:none;
+            font-weight:600;
+        }
+        .btn-ver:hover { background:#ffcc33; }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div style="background:#c62828; color:white; padding:15px; font-size:20px;">
+        Panel de Administración - El Palacio del Sándwich
+        <a href="/" style="float:right; margin-left:10px; color:white;">Ver web</a>
+        <a href="/logout" style="float:right; color:white;">Cerrar sesión</a>
+    </div>
+
+    <div class="container">
+        <h2>Reservas recibidas</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Evento</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaReservas"></tbody>
+        </table>
+    </div>
+
+<script>
+async function cargarReservas() {
+    const res = await fetch("/reservas");
+    const data = await res.json();
+
+    const tbody = document.getElementById("listaReservas");
+    tbody.innerHTML = "";
+
+    data.forEach(r => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${r.id}</td>
+                <td>${r.nombre} ${r.apellido}</td>
+                <td>${r.fecha_reserva}</td>
+                <td>${r.hora}</td>
+                <td>${r.tipo_evento}</td>
+                <td>${r.estado}</td>
+                <td>
+                    <a class="btn-ver" href="/admin/reserva_detalle.html?id=${r.id}">Ver</a>
+                </td>
+            </tr>
+        `;
+    });
+
+}
+cargarReservas();
+</script>
+
+</body>
+</html>

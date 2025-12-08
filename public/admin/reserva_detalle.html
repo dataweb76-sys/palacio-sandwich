@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle de Reserva</title>
+  <link rel="stylesheet" href="../admin.css">
+</head>
+
+<body class="dashboard-body">
+  <!-- HEADER -->
+  <header class="dashboard-header">
+    <div class="dashboard-title">Detalle de Reserva</div>
+    <div>
+      <button class="btn-header" onclick="volver()">Volver</button>
+      <button class="btn-header" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+
+    <div class="panel-box">
+
+      <!-- DATOS DEL CLIENTE -->
+      <div id="infoCliente"></div>
+
+      <!-- PRODUCTOS -->
+      <h3 style="margin-top:20px;">Productos solicitados</h3>
+
+      <table class="tabla-admin">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario ($)</th>
+            <th>Subtotal ($)</th>
+          </tr>
+        </thead>
+        <tbody id="tablaProductos"></tbody>
+      </table>
+
+      <!-- ENVÍO -->
+      <div style="margin-top:15px;">
+        <label><strong>Costo de envío ($)</strong></label>
+        <input id="envio" type="number" value="0" min="0" oninput="calcularTotal()" />
+      </div>
+
+      <!-- TOTAL FINAL -->
+      <div style="text-align:right; margin-top:20px; font-size:18px; font-weight:bold;">
+        Total final: $ <span id="totalFinal">0</span>
+      </div>
+
+      <!-- ACCIONES -->
+      <div style="margin-top:25px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn-header" style="background:#25D366;" onclick="enviarWhatsApp()">
+          Enviar presupuesto por WhatsApp
+        </button>
+
+        <button class="btn-header" style="background:#2196F3;" onclick="marcarConfirmado()">
+          Marcar como CONFIRMADO
+        </button>
+      </div>
+
+      <hr style="margin:30px 0;">
+
+      <!-- HISTORIAL -->
+      <h3>Historial de Presupuestos</h3>
+
+      <div id="historialBox" class="panel-box">
+        <p>Cargando historial...</p>
+      </div>
+
+    </div>
+
+  </main>
+
+<script>
+/* ==============================
+   AUTENTICACIÓN
+================================*/
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "../login.html";
+
+let reserva = null;
+
+/* ==============================
+   VOLVER / LOGOUT
+================================*/
+function volver() {
+  window.location.href = "../reservas_admin.html";
+}
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "../login.html";
+}
+
+/* ==============================
+   CARGAR RESERVA COMPLETA
+================================*/
+async function cargarReserva() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  const res = await fetch(`/reservas/${id}`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  reserva = await res.json();
+
+  /* DATOS DEL CLIENTE */
+  document.getElementById("infoCliente").innerHTML = `
+    <p><strong>Cliente:</strong> ${reserva.nombre} ${reserva.apellido}</p>
+    <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
+    <p><strong>Domicilio:</strong> ${reserva.domicilio}, ${reserva.ciudad}, ${reserva.provincia}</p>
+    <p><strong>Fecha de la reserva:</strong> ${reserva.fecha_reserva}</p>
+    <p><strong>Hora:</strong> ${reserva.hora}</p>
+    <p><strong>Evento:</strong> ${reserva.tipo_evento}</p>
+    <p><strong>Estado actual:</strong> ${reserva.estado}</p>
+  `;
+
+  cargarProductos();
+  cargarHistorial();
+}
+
+/* ==============================
+   MOSTRAR PRODUCTOS
+================================*/
+function cargarProductos() {
+  const tbody = document.getElementById("tablaProductos");
+  tbody.innerHTML = "";
+
+  (reserva.productos || []).forEach((p, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${p.producto}</td>
+      <td>${p.cantidad}</td>
+      <td>
+        <input type="number" min="0" value="0" data-index="${index}" oninput="calcularTotal()">
+      </td>
+      <td id="subtotal-${index}">0</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ==============================
+   CALCULAR TOTAL
+================================*/
+function calcularTotal() {
+  let total = 0;
+
+  (reserva.productos || []).forEach((p, index) => {
+    const input = document.querySelector(`input[data-index="${index}"]`);
+    const precio = parseFloat(input.value) || 0;
+    const subtotal = precio * p.cantidad;
+    document.getElementById(`subtotal-${index}`).innerText = subtotal.toFixed(2);
+    total += subtotal;
+  });
+
+  const envio = parseFloat(document.getElementById("envio").value) || 0;
+  total += envio;
+
+  document.getElementById("totalFinal").innerText = total.toFixed(2);
+  return total;
+}
+
+/* ==============================
+   ENVIAR PRESUPUESTO POR WHATSAPP
+================================*/
+async function enviarWhatsApp() {
+  const total = calcularTotal();
+
+  /* ARMAR OBJETO PARA GUARDAR EN BD */
+  const presupuesto = [];
+
+  (reserva.productos || []).forEach((p, index) => {
+    const precio = parseFloat(document.querySelector(`input[data-index="${index}"]`).value || 0);
+    const subtotal = precio * p.cantidad;
+
+    presupuesto.push({
+      producto: p.producto,
+      cantidad: p.cantidad,
+      precio: precio,
+      subtotal: subtotal
+    });
+  });
+
+  const envio = parseFloat(document.getElementById("envio").value || 0);
+
+  /* GUARDAR PRESUPUESTO EN BD */
+  await fetch(`/reservas/${reserva.id}/presupuesto`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({
+      presupuesto: presupuesto,
+      envio: envio,
+      total: total
+    })
+  });
+
+  /* ACTUALIZAR ESTADO */
+  await fetch(`/reservas/${reserva.id}/estado`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ estado: "presupuestado" })
+  });
+
+  /* ARMAR MENSAJE WHATSAPP */
+  let mensaje = `Hola ${reserva.nombre}! 👋%0A%0A`;
+  mensaje += `Aquí te dejamos el presupuesto de tu reserva:%0A%0A`;
+  mensaje += `📅 Fecha: ${reserva.fecha_reserva}%0A`;
+  mensaje += `⏰ Hora: ${reserva.hora}%0A`;
+  mensaje += `🎉 Evento: ${reserva.tipo_evento}%0A%0A`;
+
+  mensaje += `🛒 Productos:%0A`;
+
+  presupuesto.forEach(item => {
+    mensaje += `• ${item.producto}: ${item.cantidad}u — $${item.precio} c/u (subtotal $${item.subtotal})%0A`;
+  });
+
+  mensaje += `%0A🚚 Envío: $${envio}`;
+  mensaje += `%0A💵 Total: $${total}%0A%0A`;
+  mensaje += `Quedamos a la espera de tu respuesta.%0A`;
+  mensaje += `Saludos atte.%0AEl Palacio del Sándwich!! 🥪`;
+
+  const url = `https://wa.me/${encodeURIComponent(reserva.telefono)}?text=${mensaje}`;
+  window.open(url, "_blank");
+
+  cargarHistorial();
+}
+
+/* ==============================
+   MARCAR COMO CONFIRMADO
+================================*/
+async function marcarConfirmado() {
+  const res = await fetch(`/reservas/${reserva.id}/estado`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({ estado: "confirmado" })
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    alert("La reserva fue marcada como CONFIRMADA.");
+    volver();
+  } else {
+    alert("No se pudo actualizar el estado.");
+  }
+}
+
+/* ==============================
+   CARGAR HISTORIAL DE PRESUPUESTOS
+================================*/
+async function cargarHistorial() {
+  const res = await fetch(`/reservas/${reserva.id}/presupuestos`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const data = await res.json();
+  const cont = document.getElementById("historialBox");
+
+  if (!data || data.length === 0) {
+    cont.innerHTML = "<p>No hay presupuestos enviados todavía.</p>";
+    return;
+  }
+
+  let html = `
+    <table class="tabla-admin">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach((p, i) => {
+    html += `
+      <tr>
+        <td>${new Date(p.fecha).toLocaleString()}</td>
+        <td>$${p.total}</td>
+        <td>${p.estado}</td>
+        <td>
+          <button class="btn-table" onclick="toggleDetalle(${i})">Ver detalle</button>
+          <button class="btn-table" onclick="reenviarPresupuesto(${i})">Reenviar</button>
+        </td>
+      </tr>
+
+      <tr id="detalle-${i}" style="display:none; background:#fafafa;">
+        <td colspan="4">
+          ${renderDetalle(p)}
+        </td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table>";
+  cont.innerHTML = html;
+}
+
+/* DETALLE DEL PRESUPUESTO */
+function renderDetalle(p) {
+  let html = "<div style='padding:10px;'>";
+
+  html += "<strong>Productos:</strong><br>";
+  p.presupuesto_json.forEach(item => {
+    html += `
+      • ${item.producto} — ${item.cantidad}u — $${item.precio} c/u  
+      (subtotal: $${item.subtotal})<br>
+    `;
+  });
+
+  html += `<br><strong>Envío:</strong> $${p.envio}<br>`;
+  html += `<strong>Total:</strong> $${p.total}<br>`;
+
+  html += "</div>";
+  return html;
+}
+
+/* MOSTRAR / OCULTAR DETALLE */
+function toggleDetalle(i) {
+  const fila = document.getElementById(`detalle-${i}`);
+  fila.style.display = fila.style.display === "none" ? "table-row" : "none";
+}
+
+/* REENVIAR PRESUPUESTO */
+async function reenviarPresupuesto(index) {
+  const res = await fetch(`/reservas/${reserva.id}/presupuestos`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const historico = await res.json();
+  const p = historico[index];
+
+  let mensaje = `Hola ${reserva.nombre}! 👋%0A%0A`;
+  mensaje += `Te reenvío el presupuesto:%0A%0A`;
+
+  p.presupuesto_json.forEach(item => {
+    mensaje += `• ${item.producto}: ${item.cantidad}u — $${item.precio} c/u (subtotal $${item.subtotal})%0A`;
+  });
+
+  mensaje += `%0A🚚 Envío: $${p.envio}`;
+  mensaje += `%0A💵 Total: $${p.total}%0A%0A`;
+  mensaje += `Saludos.%0AEl Palacio del Sándwich`;
+
+  const url = `https://wa.me/${encodeURIComponent(reserva.telefono)}?text=${mensaje}`;
+  window.open(url, "_blank");
+}
+
+/* EJECUTAR */
+cargarReserva();
+</script>
+
+</body>
+</html>

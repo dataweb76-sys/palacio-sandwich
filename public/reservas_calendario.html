@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendario de Reservas</title>
+  <link rel="stylesheet" href="admin.css">
+
+  <style>
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .cal-header button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #f5b000;
+      font-weight: bold;
+    }
+
+    .filtros-box {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .contador-box {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      flex-wrap: wrap;
+    }
+
+    .contador-box span {
+      padding: 5px 10px;
+      border-radius: 6px;
+      color: white;
+    }
+
+    .c-pendiente { background: #c62828; }
+    .c-presupuestado { background: #f57c00; }
+    .c-confirmado { background: #2e7d32; }
+    .c-total { background: #37474f; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .calendar-day {
+      background: #fafafa;
+      border-radius: 8px;
+      min-height: 110px;
+      padding: 5px;
+      font-size: 14px;
+      position: relative;
+      border: 1px solid #eee;
+    }
+
+    .day-number {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: block;
+      margin-top: 3px;
+      padding: 3px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      color: #fff;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .pendiente { background: #c62828; }
+    .presupuestado { background: #f57c00; }
+    .confirmado { background: #2e7d32; }
+
+    .export-box {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body class="dashboard-body">
+
+  <header class="dashboard-header">
+    <div class="dashboard-title">Calendario de Reservas</div>
+    <div>
+      <button class="btn-header" onclick="volverAdmin()">Volver</button>
+      <button class="btn-header" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+
+    <!-- Header calendario -->
+    <div class="cal-header">
+      <button onclick="cambiarMes(-1)">◀ Mes anterior</button>
+      <h2 id="tituloMes"></h2>
+      <button onclick="cambiarMes(1)">Mes siguiente ▶</button>
+    </div>
+
+    <!-- Filtro -->
+    <div class="filtros-box">
+      <label><strong>Filtrar por estado:</strong></label>
+      <select id="filtroEstado" onchange="dibujarCalendario()">
+        <option value="todos">Todos</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="presupuestado">Presupuestado</option>
+        <option value="confirmado">Confirmado</option>
+      </select>
+    </div>
+
+    <!-- Botón Exportar -->
+    <div class="export-box">
+      <button class="btn-header" onclick="exportarExcel()">Exportar a Excel</button>
+    </div>
+
+    <!-- Contadores -->
+    <div id="contadores" class="contador-box">
+      <!-- Se completa desde JS -->
+    </div>
+
+    <!-- Calendario -->
+    <div id="calendario" class="calendar-grid"></div>
+
+  </main>
+
+  <script src="reservas_calendario.js"></script>
+
+  <script>
+    function volverAdmin() {
+      window.location.href = "reservas_admin.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Stock - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dashboard-body">
+  <header class="dashboard-header">
+    <div class="dashboard-title">Control de Stock</div>
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver al panel</button>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Control de Stock (próximamente funcional)</h2>
+    <p>Acá vamos a listar productos con stock bajo y ajustar cantidades.</p>
+  </main>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    function goBack() { window.location.href = "dashboard.html"; }
+    function logout() { localStorage.removeItem("token"); window.location.href = "login.html"; }
+  </script>
+</body>
+</html>

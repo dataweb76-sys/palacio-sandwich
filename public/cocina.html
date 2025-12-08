@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modo Cocina - El Palacio del Sándwich</title>
+
+  <link rel="stylesheet" href="admin.css" />
+
+  <style>
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .kitchen-header {
+      background: #d62828;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,.3);
+    }
+
+    .kitchen-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .kitchen-sub {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .kitchen-buttons > button {
+      background: #fff;
+      color: #d62828;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-left: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .kitchen-container {
+      padding: 16px;
+    }
+
+    .kitchen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .k-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.18);
+      border: 2px solid #d62828;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .k-card.nuevo {
+      animation: parpadeo 1s ease-in-out 6;
+      background: #fffbe6;
+    }
+
+    @keyframes parpadeo {
+      0% { background-color: #fffbe6; }
+      50% { background-color: #ffe066; }
+      100% { background-color: #fffbe6; }
+    }
+
+    .k-header-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .k-id {
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .k-nombre {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .k-total {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .k-estado {
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .estado-pendiente { background: #ffb300; }
+    .estado-preparando { background: #fb8c00; }
+    .estado-listo { background: #43a047; }
+    .estado-otro { background: #546e7a; }
+
+    .k-items {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .k-items strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .k-footer {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .k-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .k-btn-prep { background: #fb8c00; }
+    .k-btn-listo { background: #43a047; }
+    .k-btn-entregado { background: #455a64; }
+    .k-btn-print { background: #37474f; }
+
+    .k-info {
+      font-size: 11px;
+      margin-top: 6px;
+      color: #555;
+    }
+
+    .k-empty {
+      text-align: center;
+      margin-top: 30px;
+      color: #777;
+      font-size: 14px;
+    }
+	.k-btn-programados {
+  background: #1976d2;
+  color: #fff !important;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.k-btn-programados:hover {
+  background: #0d47a1;
+}
+  </style>
+</head>
+
+<body>
+<header class="kitchen-header">
+  <div>
+    <div class="kitchen-title">Modo Cocina</div>
+    <div class="kitchen-sub">Pedidos en tiempo real para producción</div>
+  </div>
+
+  <div class="kitchen-buttons">
+    <button onclick="window.location.href='admin.html'">Volver al panel</button>
+
+    <!-- NUEVO: TABLERO DE PEDIDOS PROGRAMADOS -->
+    <button class="k-btn-programados" onclick="irProgramados()">📊 Programados</button>
+
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+</header>
+
+  <main class="kitchen-container">
+    <div id="kitchenGrid" class="kitchen-grid"></div>
+    <div id="kitchenEmpty" class="k-empty" style="display:none;">
+      No hay pedidos pendientes o en preparación.
+    </div>
+  </main>
+
+  <!-- Sonido de nuevo pedido (ya usás /sonidos/nuevo_pedido.mp3 en dashboard) -->
+  <audio id="sonidoNuevo" src="sonidos/nuevo_pedido.mp3" preload="auto"></audio>
+
+  <script src="cocina.js"></script>
+</body>
+</html>

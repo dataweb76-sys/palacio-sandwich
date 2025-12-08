@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POS - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="admin-header">
+    <span>Punto de Venta (POS) - El Palacio del Sándwich</span>
+    <div class="header-actions">
+      <button id="btn-ir-admin" class="secundario">Panel admin</button>
+      <button id="btn-logout" class="secundario">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <div class="container pos-container">
+
+    <!-- Columna izquierda: productos / promos -->
+    <div class="pos-main">
+      <section class="section">
+        <h2>Productos</h2>
+
+        <div class="pos-filtros">
+          <button class="secundario" data-cat="">Todos</button>
+          <button class="secundario" data-cat="Clasico">Clásicos</button>
+          <button class="secundario" data-cat="Especial">Especiales</button>
+          <button class="secundario" data-cat="Combo">Combos</button>
+          <button class="secundario" data-cat="Bebida">Bebidas</button>
+          <button class="secundario" data-cat="Postre">Postres</button>
+        </div>
+
+        <div id="pos-productos" class="menu-grid"></div>
+      </section>
+
+      <section class="section">
+        <h2>Promociones</h2>
+        <div id="pos-promos" class="menu-grid"></div>
+      </section>
+    </div>
+
+    <!-- Columna derecha: ticket / resumen -->
+    <aside class="cart-panel pos-cart-panel">
+      <h2>Ticket actual</h2>
+      <div id="pos-cart-items" class="cart-items"></div>
+
+      <div class="cart-summary">
+        <div class="cart-total">
+          <span>Total ticket:</span>
+          <span id="pos-cart-total">$0</span>
+        </div>
+        <button id="pos-btn-clear" class="secundario btn-full">Vaciar ticket</button>
+        <button id="pos-btn-confirm" class="btn-full">Confirmar venta</button>
+      </div>
+
+      <div class="pos-stats">
+        <h3>Resumen del día</h3>
+        <p><strong>Ventas hoy:</strong> <span id="pos-ventas-hoy">0</span></p>
+        <p><strong>Total vendido hoy:</strong> <span id="pos-total-hoy">$0</span></p>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // ================== AUTH / TOKEN ==================
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login.html";
+    }
+    const AUTH_HEADER = { Authorization: "Bearer " + token };
+
+    document.getElementById("btn-logout").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "/login.html";
+    });
+
+    document.getElementById("btn-ir-admin").addEventListener("click", () => {
+      window.location.href = "/admin.html";
+    });
+
+    // ================== ESTADO ==================
+    let productos = [];
+    let promos = [];
+    let posCart = [];
+
+    let filtroCategoria = "";
+
+    // ================== CARGA DE PRODUCTOS / PROMOS ==================
+    async function cargarProductosPOS() {
+      const res = await fetch("/products");
+      productos = await res.json();
+      renderProductosPOS();
+    }
+
+    async function cargarPromosPOS() {
+      const res = await fetch("/promos");
+      promos = await res.json();
+      renderPromosPOS();
+    }
+
+    function renderProductosPOS() {
+      const cont = document.getElementById("pos-productos");
+      const filtrados = productos.filter(p => {
+        if (!filtroCategoria) return true;
+        return (p.category || "") === filtroCategoria;
+      });
+
+      cont.innerHTML = filtrados.map(p => {
+        const sinStock = (p.stock !== null && p.stock !== undefined && p.stock <= 0);
+        return `
+          <div class="item">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
+            <h3>${p.name}</h3>
+            ${p.category ? `<span class="badge-cat">${p.category}</span>` : ""}
+            <p class="item-desc">${p.description || ""}</p>
+            <p class="item-price">$${p.price}</p>
+            ${p.stock != null ? `<p class="item-stock ${sinStock ? "txt-danger" : ""}">
+              ${sinStock ? "Sin stock" : "Stock: " + p.stock}
+            </p>` : ""}
+            <button
+              class="btn-add"
+              ${sinStock ? "disabled" : ""}
+              onclick="posAgregar('producto', ${p.id})"
+            >
+              Agregar
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderPromosPOS() {
+      const cont = document.getElementById("pos-promos");
+      cont.innerHTML = promos.map(p => `
+        <div class="item promo">
+          ${p.image ? `<img src="${p.image}" alt="${p.title}">` : ""}
+          <h3>${p.title}</h3>
+          <p class="item-desc">${p.description || ""}</p>
+          ${p.price != null ? `<p class="item-price">$${p.price}</p>` : ""}
+          <button class="btn-add" onclick="posAgregar('promo', ${p.id})">
+            Agregar promo
+          </button>
+        </div>
+      `).join("");
+    }
+
+    // ================== CARRITO POS ==================
+    function posAgregar(tipo, id) {
+      let base;
+      if (tipo === "producto") {
+        base = productos.find(p => p.id === id);
+        if (!base) return;
+      } else {
+        base = promos.find(p => p.id === id);
+        if (!base) return;
+      }
+
+      const key = tipo + "-" + id;
+      const found = posCart.find(i => i.key === key);
+      const price = tipo === "producto" ? base.price : (base.price || 0);
+      const name = tipo === "producto" ? base.name : base.title;
+
+      if (found) {
+        found.qty += 1;
+      } else {
+        posCart.push({
+          key,
+          tipo,
+          refId: id,
+          name,
+          price: Number(price) || 0,
+          qty: 1,
+        });
+      }
+
+      renderPosCart();
+    }
+
+    function posCambiarCantidad(key, delta) {
+      const idx = posCart.findIndex(i => i.key === key);
+      if (idx === -1) return;
+
+      posCart[idx].qty += delta;
+      if (posCart[idx].qty <= 0) {
+        posCart.splice(idx, 1);
+      }
+
+      renderPosCart();
+    }
+
+    function posVaciar() {
+      if (!posCart.length) return;
+      if (!confirm("¿Vaciar ticket actual?")) return;
+      posCart = [];
+      renderPosCart();
+    }
+
+    function renderPosCart() {
+      const cont = document.getElementById("pos-cart-items");
+      if (!posCart.length) {
+        cont.innerHTML = `<p class="cart-empty">No hay ítems en el ticket.</p>`;
+      } else {
+        cont.innerHTML = posCart.map(item => `
+          <div class="cart-item">
+            <div>
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-price">$${item.price} c/u</div>
+            </div>
+            <div class="cart-item-controls">
+              <button onclick="posCambiarCantidad('${item.key}', -1)">-</button>
+              <span>${item.qty}</span>
+              <button onclick="posCambiarCantidad('${item.key}', 1)">+</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      const total = posCart.reduce((acc, it) => acc + it.price * it.qty, 0);
+      document.getElementById("pos-cart-total").textContent = "$" + total.toFixed(2);
+    }
+
+    // ================== CONFIRMAR VENTA ==================
+    async function posConfirmarVenta() {
+      if (!posCart.length) {
+        alert("El ticket está vacío.");
+        return;
+      }
+
+      if (!confirm("¿Confirmar venta y descontar stock?")) return;
+
+      try {
+        // 1) Vender productos (usa /products/sell/:id por cada unidad)
+        for (const item of posCart) {
+          if (item.tipo === "producto") {
+            for (let i = 0; i < item.qty; i++) {
+              const res = await fetch(`/products/sell/${item.refId}`, {
+                method: "POST",
+                headers: AUTH_HEADER,
+              });
+              const data = await res.json();
+              if (!res.ok || data.error) {
+                alert("Error al vender producto: " + (data.error || "Desconocido"));
+                // Re-cargar productos para reflejar stock real
+                await cargarProductosPOS();
+                return;
+              }
+            }
+          }
+        }
+
+        // 2) Registrar promos en ventas (no stock)
+        for (const item of posCart) {
+          if (item.tipo === "promo") {
+            const res = await fetch("/ventas/promo", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...AUTH_HEADER,
+              },
+              body: JSON.stringify({
+                nombre: item.name,
+                cantidad: item.qty,
+                precio_unitario: item.price,
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+              alert("Error al registrar promo: " + (data.error || "Desconocido"));
+              return;
+            }
+          }
+        }
+
+        alert("Venta registrada correctamente ✅");
+
+        // Limpiar ticket
+        posCart = [];
+        renderPosCart();
+
+        // Actualizar productos (stock) y resumen del día
+        await cargarProductosPOS();
+        await actualizarResumenDia();
+      } catch (err) {
+        console.error(err);
+        alert("Error general al procesar la venta.");
+      }
+    }
+
+    // ================== RESUMEN DEL DÍA ==================
+    async function actualizarResumenDia() {
+      const hoy = new Date().toISOString().split("T")[0];
+      const res = await fetch(`/ventas/fecha/${hoy}`, { headers: AUTH_HEADER });
+      if (!res.ok) return;
+      const ventas = await res.json();
+
+      const total = ventas.reduce((acc, v) => acc + (v.precio_total || 0), 0);
+      document.getElementById("pos-ventas-hoy").textContent = ventas.length;
+      document.getElementById("pos-total-hoy").textContent = "$" + total.toFixed(2);
+    }
+
+    // ================== FILTROS CATEGORÍA ==================
+    document.querySelectorAll(".pos-filtros button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        filtroCategoria = btn.getAttribute("data-cat") || "";
+        renderProductosPOS();
+      });
+    });
+
+    // ================== EVENTOS ==================
+    document.getElementById("pos-btn-clear").addEventListener("click", posVaciar);
+    document.getElementById("pos-btn-confirm").addEventListener("click", posConfirmarVenta);
+
+    // Exponer algunas funciones al global para botones inline
+    window.posAgregar = posAgregar;
+    window.posCambiarCantidad = posCambiarCantidad;
+
+    // ================== INIT ==================
+    cargarProductosPOS();
+    cargarPromosPOS();
+    renderPosCart();
+    actualizarResumenDia();
+  </script>
+</body>
+</html>

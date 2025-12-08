@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Seguimiento del Pedido</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    font-family: "Montserrat", sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+    margin: 0;
+  }
+
+  .box {
+    max-width: 480px;
+    margin: auto;
+    padding: 24px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px rgba(0,0,0,.15);
+    text-align: center;
+  }
+
+  h2 {
+    margin-top: 0;
+    color: #d62828;
+    font-weight: 800;
+  }
+
+  .estado {
+    font-size: 26px;
+    font-weight: 900;
+    margin: 14px 0;
+    padding: 12px;
+    border-radius: 10px;
+    color: #fff;
+  }
+
+  .pendiente  { background: #ffb300; }
+  .preparando { background: #fb8c00; }
+  .listo      { background: #43a047; }
+  .en_camino  { background: #1976d2; }
+  .entregado  { background: #455a64; }
+
+  .loading {
+    opacity: .6;
+  }
+
+  #extra {
+    margin-top: 14px;
+    font-size: 16px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Seguimiento del Pedido</h2>
+
+  <p style="margin-bottom:4px;">Pedido #<span id="pid"></span></p>
+
+  <div id="estadoTexto" class="estado pendiente loading">
+    Conectando...
+  </div>
+
+  <div id="extra"></div>
+</div>
+
+<script>
+  // Obtener ID del pedido desde la URL
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  document.getElementById("pid").textContent = id;
+
+  const estadoDiv = document.getElementById("estadoTexto");
+  const extra = document.getElementById("extra");
+
+  // Conectar SSE
+  const evt = new EventSource(`/pedidos_estado/tracking/${id}`);
+
+  evt.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    const estado = (data.estado || "pendiente").toLowerCase();
+
+    estadoDiv.className = "estado " + estado;
+    estadoDiv.classList.remove("loading");
+    estadoDiv.textContent = estado.toUpperCase();
+
+    // Mensajes según estado
+    if (estado === "preparando") {
+      extra.textContent = "Estamos preparando tu pedido 🍳";
+    } else if (estado === "listo") {
+      extra.textContent = "Tu pedido está listo y saldrá en instantes 🚗💨";
+    } else if (estado === "en_camino") {
+      extra.textContent = "El repartidor está en camino hacia tu domicilio 📍";
+    } else if (estado === "entregado") {
+      extra.textContent = "¡Pedido entregado! 🥪 Gracias por elegirnos ❤️";
+    }
+  };
+
+  evt.onerror = () => {
+    estadoDiv.textContent = "Reintentando conexión...";
+    estadoDiv.classList.add("loading");
+  };
+</script>
+
+</body>
+</html>

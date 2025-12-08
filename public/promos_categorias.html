@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categorías de Promos</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="dashboard-body">
+  <header class="dashboard-header">
+    <div class="dashboard-title">Categorías de Promociones</div>
+    <div>
+      <button class="btn-logout" onclick="goBack()">Volver al Panel</button>
+      <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <h2>Crear / Editar Categoría de Promos</h2>
+
+    <form id="form-catpromo">
+      <input type="hidden" id="cat_id" />
+
+      <label>Nombre</label>
+      <input id="cat_name" required />
+
+      <label>Descripción</label>
+      <textarea id="cat_desc"></textarea>
+
+      <button class="btn-primary" type="submit">Guardar</button>
+      <button type="button" class="btn-secondary" onclick="resetForm()">Limpiar</button>
+
+      <p id="msg" class="mensaje"></p>
+    </form>
+
+    <h2>Listado</h2>
+
+    <table class="tabla" id="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  </main>
+
+  <script src="promos_categorias.js"></script>
+</body>
+</html>

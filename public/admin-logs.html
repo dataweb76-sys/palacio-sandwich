@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditoría de Usuarios - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="dashboard-body">
+
+<header class="dashboard-header">
+  <div class="dashboard-title">Auditoría de Usuarios (SUPERADMIN)</div>
+  <div>
+    <button class="btn-logout" onclick="goBack()">Volver al Panel</button>
+    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="filtros-logs">
+    <h2>Filtros</h2>
+    <div class="row-3">
+      <div>
+        <label>Desde</label>
+        <input type="date" id="filtro-desde" />
+      </div>
+      <div>
+        <label>Hasta</label>
+        <input type="date" id="filtro-hasta" />
+      </div>
+      <div>
+        <label>Usuario</label>
+        <select id="filtro-usuario">
+          <option value="">Todos</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-2" style="margin-top:10px;">
+      <div>
+        <label>Acción</label>
+        <select id="filtro-accion">
+          <option value="">Todas</option>
+          <option value="LOGIN">LOGIN</option>
+          <option value="PRODUCT_CREATE">Alta de producto</option>
+          <option value="PRODUCT_UPDATE">Edición de producto</option>
+          <option value="PRODUCT_DELETE">Baja de producto</option>
+          <option value="PRODUCT_SELL">Venta (producto)</option>
+          <option value="VENTA_PROMO">Venta (promo)</option>
+          <option value="ADMIN_CREATE">Alta de admin</option>
+          <option value="ADMIN_DELETE">Baja de admin</option>
+          <option value="CHANGE_PASSWORD">Cambio de contraseña</option>
+        </select>
+      </div>
+
+      <div class="filtros-logs-buttons">
+        <button class="btn-primary" id="btn-aplicar">Aplicar filtros</button>
+        <button class="btn-secondary" id="btn-excel">Exportar Excel</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="logs-dashboard">
+    <h2>Resumen del día / período</h2>
+    <div class="dashboard-grid">
+      <div class="dash-card">
+        <h3>Acciones totales</h3>
+        <p id="stat-acciones" class="stat-num">0</p>
+      </div>
+      <div class="dash-card">
+        <h3>Usuarios activos</h3>
+        <p id="stat-usuarios-activos" class="stat-num">0</p>
+      </div>
+      <div class="dash-card">
+        <h3>Altas de productos</h3>
+        <p id="stat-altas" class="stat-num">0</p>
+      </div>
+      <div class="dash-card">
+        <h3>Ventas registradas</h3>
+        <p id="stat-ventas" class="stat-num">0</p>
+      </div>
+      <div class="dash-card">
+        <h3>Cambios de stock</h3>
+        <p id="stat-stock" class="stat-num-small">0</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:25px;">Actividad por usuario</h3>
+    <div id="logs-barras-usuarios" class="logs-bars-container">
+      <!-- acá se dibujan “barras” por usuario -->
+    </div>
+  </section>
+
+  <section class="logs-tabla">
+    <h2>Detalle de acciones</h2>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Fecha/Hora</th>
+          <th>Usuario</th>
+          <th>Acción</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-logs-body">
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<script src="admin-logs.js"></script>
+</body>
+</html>

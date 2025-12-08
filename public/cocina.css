@@ -1,0 +1,88 @@
+/* ============================================
+   ESTILOS PARA COCINA
+   ============================================ */
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+#kitchenGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 18px;
+}
+
+.k-card {
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border-left: 6px solid #d62828;
+  transition: .3s;
+}
+
+.k-card.nuevo {
+  animation: nuevoFlash 0.7s ease-in-out;
+}
+
+@keyframes nuevoFlash {
+  0% { background:#fff8d1; }
+  100% { background:white; }
+}
+
+/* ESTADOS */
+.estado-pendiente { color:#d62828; font-weight:bold; }
+.estado-preparando { color:#ff9800; font-weight:bold; }
+.estado-listo { color:#2e7d32; font-weight:bold; }
+.en_camino { color:#1976d2; font-weight:bold; }
+
+/* ALERTAS POR HORA */
+.k-card.alerta-hora {
+  border: 3px solid #ffcc00 !important;
+  animation: alertaPulse 1s infinite ease-in-out;
+}
+
+.k-card.retrasado {
+  border: 3px solid #ff4444 !important;
+  background: #ffeaea;
+}
+
+@keyframes alertaPulse {
+  0% { box-shadow: 0 0 0px #ffcc00; }
+  50% { box-shadow: 0 0 12px #ffcc00; }
+  100% { box-shadow: 0 0 0px #ffcc00; }
+}
+
+.k-hora-alert {
+  margin-top: 6px;
+  font-size: 13px;
+  padding: 6px;
+  background: #fff7d1;
+  border-radius: 6px;
+}
+
+/* Footer botones */
+.k-footer {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.k-btn {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+}
+
+.k-btn-prep { background:#ff9800; }
+.k-btn-listo { background:#2e7d32; }
+.k-btn-camino { background:#1976d2; }
+.k-btn-entregado { background:#444; }
+.k-btn-print { background:#555; }

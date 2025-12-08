@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auditoría - El Palacio del Sándwich</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+      background: #f4f5f7;
+      color: #222;
+    }
+
+    header {
+      background: #d62828;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    header button {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 14px;
+      cursor: pointer;
+      background: #000;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px 32px;
+    }
+
+    .page h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      font-size: 13px;
+      outline: none;
+      background: #fff;
+    }
+
+    .filter-group input[type="search"] {
+      min-width: 200px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 13px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      background: #e0e1e5;
+      color: #222;
+    }
+
+    .btn-primary {
+      background: #2b9348;
+      color: #fff;
+    }
+
+    .logs-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: #fafafa;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      color: #555;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .log-meta {
+      font-size: 11px;
+      color: #777;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #edf2ff;
+      color: #1e3a8a;
+    }
+
+    .badge-login {
+      background: #e0f2fe;
+      color: #075985;
+    }
+
+    .badge-change {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .table-footer {
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #msg {
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    #msg.ok { color: #2b9348; }
+    #msg.error { color: #d62828; }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filters {
+        width: 100%;
+      }
+
+      .filter-group input[type="search"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Auditoría del Sistema</h1>
+  <div>
+    <button onclick="goBack()">Volver al Panel</button>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+</header>
+
+<main class="page">
+  <h2>Historial de acciones</h2>
+  <p class="subtitle">
+    Registro de accesos y movimientos realizados en el panel administrador.
+    Solo visible para el <strong>SUPERADMIN</strong>.
+  </p>
+
+  <section class="toolbar">
+    <div class="filters">
+      <div class="filter-group">
+        <label for="search">Buscar:</label>
+        <input type="search" id="search" placeholder="Usuario o acción..." />
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-user">Usuario:</label>
+        <select id="filter-user">
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-type">Tipo:</label>
+        <select id="filter-type">
+          <option value="">Todos</option>
+          <option value="login">Logins</option>
+          <option value="password">Contraseñas</option>
+          <option value="admin">Admins</option>
+          <option value="producto">Productos</option>
+          <option value="config">Config</option>
+          <option value="venta">Ventas</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn" id="btn-refresh">Actualizar</button>
+      <button class="btn-primary" id="btn-export">Exportar CSV</button>
+    </div>
+  </section>
+
+  <p id="msg"></p>
+
+  <section class="logs-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha / Hora</th>
+          <th>Usuario</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="logs-tbody"></tbody>
+    </table>
+    <div class="table-footer">
+      <span id="logs-summary">0 registros</span>
+      <span id="logs-limit-info">Mostrando últimos 500 movimientos</span>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ==========================
+  // LOGIN Y ROLE
+  // ==========================
+  const token = localStorage.getItem("token");
+  if (!token) window.location.href = "/login.html";
+
+  const AUTH = { "Authorization": "Bearer " + token };
+
+  function goBack() { window.location.href = "/dashboard.html"; }
+  function logout() {
+    localStorage.clear();
+    window.location.href = "/login.html";
+  }
+
+  function getPayloadFromToken() {
+    try {
+      const base64 = token.split(".")[1];
+      const json = atob(base64);
+      return JSON.parse(json);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function validarRol() {
+    const payload = getPayloadFromToken();
+    if (payload.role !== "superadmin") {
+      alert("Acceso denegado. Esta sección es solo para SUPERADMIN.");
+      window.location.href = "/dashboard.html";
+    }
+  }
+
+  // ==========================
+  // ESTADO
+  // ==========================
+  let logsData = [];
+  let filteredLogs = [];
+
+  // ==========================
+  // UTILIDADES
+  // ==========================
+  function formatDateTime(ts) {
+    if (!ts) return "–";
+    // ts viene como 'YYYY-MM-DD HH:MM:SS' de SQLite
+    const t = ts.replace(" ", "T") + "Z"; // aprox a UTC
+    const d = new Date(t);
+    if (isNaN(d.getTime())) return ts;
+    return d.toLocaleString("es-AR");
+  }
+
+  function detectType(action) {
+    action = (action || "").toLowerCase();
+    if (action.includes("sesión")) return "login";
+    if (action.includes("contraseña") || action.includes("password")) return "password";
+    if (action.includes("admin")) return "admin";
+    if (action.includes("producto")) return "producto";
+    if (action.includes("venta")) return "venta";
+    if (action.includes("config")) return "config";
+    return "otro";
+  }
+
+  function badgeFor(action) {
+    const type = detectType(action);
+    if (type === "login") return '<span class="badge badge-login">Login</span>';
+    if (type === "password") return '<span class="badge badge-change">Contraseña</span>';
+    if (type === "admin") return '<span class="badge badge-danger">Admin</span>';
+    if (type === "producto") return '<span class="badge">Producto</span>';
+    if (type === "venta") return '<span class="badge">Venta</span>';
+    if (type === "config") return '<span class="badge">Config</span>';
+    return '<span class="badge">Otro</span>';
+  }
+
+  // ==========================
+  // CARGAR LOGS
+  // ==========================
+  async function cargarLogs() {
+    const msg = document.getElementById("msg");
+    msg.textContent = "";
+    msg.className = "";
+
+    try {
+      const res = await fetch("/logs?limit=500", { headers: AUTH });
+      if (res.status === 401) {
+        alert("Sesión expirada.");
+        logout();
+        return;
+      }
+      if (res.status === 403) {
+        alert("No tienes permiso para ver la auditoría.");
+        goBack();
+        return;
+      }
+
+      const data = await res.json();
+      logsData = Array.isArray(data) ? data : [];
+      aplicarFiltros();
+      llenarFiltroUsuarios();
+      msg.textContent = "Logs cargados correctamente.";
+      msg.className = "ok";
+    } catch (e) {
+      console.error(e);
+      msg.textContent = "Error cargando logs.";
+      msg.className = "error";
+    }
+  }
+
+  // ==========================
+  // FILTROS
+  // ==========================
+  function aplicarFiltros() {
+    const search = document.getElementById("search").value.toLowerCase().trim();
+    const filterUser = document.getElementById("filter-user").value;
+    const filterType = document.getElementById("filter-type").value;
+
+    filteredLogs = logsData.filter(l => {
+      const user = (l.username || "").toLowerCase();
+      const action = (l.action || "").toLowerCase();
+
+      if (search) {
+        const match = user.includes(search) || action.includes(search);
+        if (!match) return false;
+      }
+
+      if (filterUser && l.username !== filterUser) return false;
+
+      if (filterType) {
+        const t = detectType(l.action);
+        if (t !== filterType) return false;
+      }
+
+      return true;
+    });
+
+    renderTabla();
+  }
+
+  function llenarFiltroUsuarios() {
+    const select = document.getElementById("filter-user");
+    const current = select.value;
+    const set = new Set();
+
+    logsData.forEach(l => {
+      if (l.username) set.add(l.username);
+    });
+
+    select.innerHTML = '<option value="">Todos</option>';
+    Array.from(set)
+      .sort((a, b) => a.localeCompare(b))
+      .forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u;
+        opt.textContent = u;
+        if (u === current) opt.selected = true;
+        select.appendChild(opt);
+      });
+  }
+
+  // ==========================
+  // RENDER TABLA
+  // ==========================
+  function renderTabla() {
+    const tbody = document.getElementById("logs-tbody");
+    tbody.innerHTML = "";
+
+    filteredLogs.forEach(l => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${l.id}</td>
+        <td>
+          ${formatDateTime(l.timestamp)}
+          <div class="log-meta">${badgeFor(l.action)}</div>
+        </td>
+        <td>${l.username || "?"}</td>
+        <td>${l.action || ""}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("logs-summary").textContent =
+      `${filteredLogs.length} registros filtrados (de ${logsData.length} totales)`;
+  }
+
+  // ==========================
+  // EXPORT CSV
+  // ==========================
+  function exportCSV() {
+    if (!filteredLogs.length) {
+      alert("No hay datos para exportar.");
+      return;
+    }
+
+    const headers = ["ID", "Usuario", "Acción", "Fecha/Hora"];
+    const rows = filteredLogs.map(l => [
+      l.id,
+      `"${(l.username || "").replace(/"/g, '""')}"`,
+      `"${(l.action || "").replace(/"/g, '""')}"`,
+      `"${(l.timestamp || "").replace(/"/g, '""')}"`
+    ].join(";"));
+
+    const csv = [headers.join(";"), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    const today = new Date().toISOString().slice(0,10);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `logs_palacio_${today}.csv`);
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // ==========================
+  // EVENTOS
+  // ==========================
+  function setupEvents() {
+    document.getElementById("search").addEventListener("input", aplicarFiltros);
+    document.getElementById("filter-user").addEventListener("change", aplicarFiltros);
+    document.getElementById("filter-type").addEventListener("change", aplicarFiltros);
+    document.getElementById("btn-refresh").addEventListener("click", cargarLogs);
+    document.getElementById("btn-export").addEventListener("click", exportCSV);
+  }
+
+  // INIT
+  validarRol();
+  setupEvents();
+  cargarLogs();
+</script>
+
+</body>
+</html>

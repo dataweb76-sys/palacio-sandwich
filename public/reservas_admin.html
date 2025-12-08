@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservas - El Palacio del Sándwich</title>
+
+  <link rel="stylesheet" href="admin.css" />
+  <style>
+    .estado-pendiente {
+      color: #c62828;
+      font-weight: bold;
+    }
+    .estado-presupuestado {
+      color: #f57c00;
+      font-weight: bold;
+    }
+    .estado-confirmado {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .tabla-admin td, .tabla-admin th {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- HEADER -->
+  <header class="dashboard-header">
+    <div class="dashboard-title">Reservas - El Palacio del Sándwich</div>
+    <div>
+      <button class="btn-header" onclick="irDashboard()">Volver al panel</button>
+      <button class="btn-header" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+    <h2>Reservas recibidas</h2>
+
+    <!-- BUSCADOR -->
+    <div class="panel-box" style="margin-bottom: 15px;">
+      <input
+        type="text"
+        id="buscador"
+        placeholder="Buscar por nombre..."
+        oninput="filtrar()"
+        style="padding: 8px; width: 100%; max-width: 300px; border-radius: 6px; border: 1px solid #ccc;"
+      />
+    </div>
+
+    <!-- TABLA -->
+    <div class="panel-box">
+      <table id="tablaReservas" class="tabla-admin">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Evento</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <script src="reservas_admin.js"></script>
+
+  <script>
+    function irDashboard() { window.location.href = "admin.html"; }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

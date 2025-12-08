@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pedido Listo</title>
+
+<style>
+body {
+  margin: 0;
+  background: #00c853;
+  color: white;
+  font-family: Arial;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+#numero {
+  font-size: 180px;
+  font-weight: bold;
+}
+
+#cliente {
+  font-size: 60px;
+  margin-bottom: 40px;
+}
+
+#ok {
+  background: white;
+  color: #00c853;
+  padding: 20px 80px;
+  font-size: 50px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="numero"></div>
+<div id="cliente"></div>
+
+<button id="ok" onclick="cerrar()">OK</button>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+document.getElementById("numero").textContent = "#" + params.get("id");
+document.getElementById("cliente").textContent = params.get("cliente");
+
+const sonido = new Audio("sonidos/pedido_listo.mp3");
+sonido.volume = 0.9;
+sonido.play();
+
+function cerrar() {
+  window.history.back();
+}
+</script>
+
+</body>
+</html>
