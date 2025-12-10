@@ -1,182 +1,174 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../database");
+const { query } = require("../db");
 const { verifyToken } = require("./auth");
 const logAction = require("../utils/log");
 
 // ==================================================
-// OBTENER PRODUCTOS (PÚBLICO) CON FILTRO POR CATEGORÍA
-// GET /products?categoria=Algo
-// GET /products?buscar=text
+// GET /products → con filtros por categoría o búsqueda
 // ==================================================
-router.get("/", (req, res) => {
-  const categoria = req.query.categoria || null;
-  const buscar = req.query.buscar || null;
+router.get("/", async (req, res) => {
+  try {
+    const categoria = req.query.categoria || null;
+    const buscar = req.query.buscar || null;
 
-  // ===============================
-  // FILTRO POR CATEGORÍA
-  // ===============================
-  if (categoria) {
-    db.all(
-      "SELECT * FROM products WHERE category = ? ORDER BY id DESC",
-      [categoria],
-      (err, rows) => {
-        if (err) {
-          console.error("Error filtrando por categoría:", err);
-          return res.status(500).json([]);
-        }
-        return res.json(rows);
-      }
-    );
-    return;
-  }
-
-  // ===============================
-  // FILTRO POR BÚSQUEDA (OPCIONAL)
-  // ===============================
-  if (buscar) {
-    const like = `%${buscar}%`;
-    db.all(
-      `
-      SELECT * FROM products 
-      WHERE name LIKE ? OR description LIKE ? 
-      ORDER BY id DESC
-      `,
-      [like, like],
-      (err, rows) => {
-        if (err) {
-          console.error("Error filtrando por búsqueda:", err);
-          return res.status(500).json([]);
-        }
-        return res.json(rows);
-      }
-    );
-    return;
-  }
-
-  // ===============================
-  // SIN FILTROS → todos los productos
-  // ===============================
-  db.all("SELECT * FROM products ORDER BY id DESC", [], (err, rows) => {
-    if (err) {
-      console.error("Error obteniendo productos:", err);
-      return res.status(500).json({ error: "Error al obtener productos" });
+    // FILTRO POR CATEGORÍA
+    if (categoria) {
+      const result = await query(
+        "SELECT * FROM products WHERE category = $1 ORDER BY id DESC",
+        [categoria]
+      );
+      return res.json(result.rows);
     }
-    res.json(rows);
-  });
+
+    // FILTRO POR BUSCAR
+    if (buscar) {
+      const like = `%${buscar}%`;
+      const result = await query(
+        `
+        SELECT * FROM products 
+        WHERE name ILIKE $1 OR description ILIKE $1
+        ORDER BY id DESC
+        `,
+        [like]
+      );
+      return res.json(result.rows);
+    }
+
+    // SIN FILTROS
+    const all = await query("SELECT * FROM products ORDER BY id DESC");
+    return res.json(all.rows);
+  } catch (err) {
+    console.error("Error obteniendo productos:", err);
+    res.status(500).json({ error: "Error interno" });
+  }
 });
 
 // ==================================================
-// OBTENER UN PRODUCTO POR ID
+// GET /products/:id
 // ==================================================
-router.get("/:id", (req, res) => {
-  const id = req.params.id;
+router.get("/:id", async (req, res) => {
+  try {
+    const result = await query(
+      "SELECT * FROM products WHERE id = $1",
+      [req.params.id]
+    );
 
-  db.get("SELECT * FROM products WHERE id = ?", [id], (err, row) => {
-    if (err) {
-      console.error("Error obteniendo producto:", err);
-      return res.status(500).json({ error: "Error interno" });
-    }
-    if (!row) {
+    if (result.rows.length === 0)
       return res.status(404).json({ error: "Producto no encontrado" });
-    }
-    res.json(row);
-  });
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error obteniendo producto:", err);
+    res.status(500).json({ error: "Error interno" });
+  }
 });
 
 // ==================================================
 // CREAR PRODUCTO
 // ==================================================
-router.post("/", verifyToken, (req, res) => {
-  const { name, price, image, description, category, stock, stock_alert } =
-    req.body;
+router.post("/", verifyToken, async (req, res) => {
+  try {
+    const { name, price, image, description, category, stock, stock_alert } =
+      req.body;
 
-  db.run(
-    `INSERT INTO products (
-      name, price, image, description, category, stock, stock_alert
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [name, price, image, description, category, stock, stock_alert || 2],
-    function (err) {
-      if (err) {
-        console.error("Error creando producto:", err);
-        return res.status(500).json({ error: "Error al crear producto" });
-      }
+    const result = await query(
+      `
+      INSERT INTO products 
+      (name, price, image, description, category, stock, stock_alert)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id
+      `,
+      [name, price, image, description, category, stock, stock_alert || 2]
+    );
 
-      logAction(
-        req.user,
-        "PRODUCT_CREATE",
-        `Creó producto "${name}" (id ${this.lastID}), stock inicial: ${stock}`
-      );
+    const newId = result.rows[0].id;
 
-      res.json({ id: this.lastID });
-    }
-  );
+    logAction(
+      req.user,
+      "PRODUCT_CREATE",
+      `Creó producto "${name}" (id ${newId}), stock inicial: ${stock}`
+    );
+
+    res.json({ id: newId });
+  } catch (err) {
+    console.error("Error creando producto:", err);
+    res.status(500).json({ error: "Error al crear producto" });
+  }
 });
 
 // ==================================================
 // ACTUALIZAR PRODUCTO
 // ==================================================
-router.put("/:id", verifyToken, (req, res) => {
-  const id = req.params.id;
-  const { name, price, image, description, category, stock, stock_alert } =
-    req.body;
+router.put("/:id", verifyToken, async (req, res) => {
+  try {
+    const { name, price, image, description, category, stock, stock_alert } =
+      req.body;
+    const id = req.params.id;
 
-  db.run(
-    `UPDATE products 
-     SET name=?, price=?, image=?, description=?, category=?, stock=?, stock_alert=?
-     WHERE id=?`,
-    [name, price, image, description, category, stock, stock_alert, id],
-    function (err) {
-      if (err) {
-        console.error("Error actualizando producto:", err);
-        return res.status(500).json({ error: "Error al actualizar producto" });
-      }
+    await query(
+      `
+      UPDATE products SET
+        name=$1, price=$2, image=$3, description=$4,
+        category=$5, stock=$6, stock_alert=$7
+      WHERE id=$8
+      `,
+      [name, price, image, description, category, stock, stock_alert, id]
+    );
 
-      logAction(
-        req.user,
-        "PRODUCT_UPDATE",
-        `Editó producto "${name}" (id ${id}), nuevo stock: ${stock}`
-      );
+    logAction(
+      req.user,
+      "PRODUCT_UPDATE",
+      `Editó producto "${name}" (id ${id}), nuevo stock: ${stock}`
+    );
 
-      res.json({ message: "Actualizado" });
-    }
-  );
+    res.json({ message: "Actualizado" });
+  } catch (err) {
+    console.error("Error actualizando producto:", err);
+    res.status(500).json({ error: "Error interno" });
+  }
 });
 
 // ==================================================
 // VENDER UNA UNIDAD
 // ==================================================
-router.post("/sell/:id", verifyToken, (req, res) => {
+router.post("/sell/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
 
-  db.get("SELECT * FROM products WHERE id=?", [id], (err, p) => {
-    if (err || !p) {
-      console.error(err);
-      return res.status(404).json({ error: "Producto no encontrado" });
-    }
+  try {
+    // Obtener producto
+    const productRes = await query("SELECT * FROM products WHERE id=$1", [id]);
 
+    if (productRes.rows.length === 0)
+      return res.status(404).json({ error: "Producto no encontrado" });
+
+    const p = productRes.rows[0];
     const nuevoStock = (p.stock || 0) - 1;
 
-    if (nuevoStock < 0) {
+    if (nuevoStock < 0)
       return res.status(400).json({ error: "Sin stock" });
-    }
 
-    db.run("UPDATE products SET stock=? WHERE id=?", [nuevoStock, id]);
+    // Actualizar stock
+    await query("UPDATE products SET stock=$1 WHERE id=$2", [
+      nuevoStock,
+      id,
+    ]);
 
+    // Registrar venta
     const fecha = new Date().toISOString().split("T")[0];
     const cantidad = 1;
     const total = p.price * cantidad;
 
-    db.run(
-      `INSERT INTO ventas 
-       (producto_id, producto_nombre, cantidad, precio_unitario, precio_total, fecha)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [p.id, p.name, cantidad, p.price, total, fecha],
-      (err2) => {
-        if (err2) console.error("Error registrando venta:", err2);
-      }
+    await query(
+      `
+      INSERT INTO ventas 
+      (producto_id, producto_nombre, cantidad, precio_unitario, precio_total, fecha)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      `,
+      [p.id, p.name, cantidad, p.price, total, fecha]
     );
 
+    // Alertas
     let alerta = null;
     if (nuevoStock === 0) alerta = "SIN STOCK";
     else if (nuevoStock <= p.stock_alert) alerta = "STOCK BAJO";
@@ -188,24 +180,28 @@ router.post("/sell/:id", verifyToken, (req, res) => {
     );
 
     res.json({ stock: nuevoStock, alerta });
-  });
+  } catch (err) {
+    console.error("Error vendiendo producto:", err);
+    res.status(500).json({ error: "Error interno" });
+  }
 });
 
 // ==================================================
 // ELIMINAR PRODUCTO
 // ==================================================
-router.delete("/:id", verifyToken, (req, res) => {
-  const id = req.params.id;
+router.delete("/:id", verifyToken, async (req, res) => {
+  try {
+    const id = req.params.id;
 
-  db.run("DELETE FROM products WHERE id=?", [id], (err) => {
-    if (err) {
-      console.error("Error eliminando producto:", err);
-      return res.status(500).json({ error: "Error al eliminar producto" });
-    }
+    await query("DELETE FROM products WHERE id=$1", [id]);
 
     logAction(req.user, "PRODUCT_DELETE", `Eliminó producto id ${id}`);
+
     res.json({ message: "Eliminado" });
-  });
+  } catch (err) {
+    console.error("Error eliminando producto:", err);
+    res.status(500).json({ error: "Error interno" });
+  }
 });
 
 module.exports = router;

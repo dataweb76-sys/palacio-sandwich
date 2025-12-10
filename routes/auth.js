@@ -1,7 +1,7 @@
 // C:\El palacio del sándwich\server\routes\auth.js
 const express = require("express");
 const router = express.Router();
-const db = require("../database");
+const db = require("../db");
 const jwt = require("jsonwebtoken");
 const logAction = require("../utils/log");
 

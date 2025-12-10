@@ -12,6 +12,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ===============================
+// ARCHIVOS ESTÁTICOS
+// ===============================
+app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
+app.use(express.static(path.join(__dirname, "public")));
+
+// ===============================
 // IMPORTAR RUTAS
 // ===============================
 const authRouter = require("./routes/auth");
@@ -31,13 +37,7 @@ const enviosCalcRouter = require("./routes/envios_calc");
 const clientesRouter = require("./routes/clientes");
 
 // ===============================
-// ARCHIVOS ESTÁTICOS
-// ===============================
-app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
-app.use(express.static(path.join(__dirname, "public")));
-
-// ===============================
-// USAR RUTAS
+// USAR RUTAS API
 // ===============================
 app.use("/auth", authRouter);
 app.use("/products", productsRouter);
@@ -56,10 +56,19 @@ app.use("/api/calcular-envio", enviosCalcRouter);
 app.use("/clientes", clientesRouter);
 
 // ===============================
-// INICIAR SERVIDOR
+// FALLBACK SOLO PARA FRONTEND
 // ===============================
-// 👇 IMPORTANTE PARA RAILWAY: usar process.env.PORT
+app.get("*", (req, res) => {
+  if (req.originalUrl.startsWith("/api") || req.originalUrl.startsWith("/auth"))
+    return res.status(404).json({ error: "Ruta API inexistente" });
+
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ===============================
+// INICIAR SERVIDOR PARA RAILWAY
+// ===============================
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () =>
+app.listen(PORT, "0.0.0.0", () =>
   console.log(`Servidor corriendo en puerto ${PORT}`)
 );
